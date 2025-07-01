@@ -1,12 +1,12 @@
 package com.example.lifetrack.ui.navigation
 
-import android.window.SplashScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.lifetrack.ui.screens.SplashScreen
 import com.example.lifetrack.ui.screens.LoginScreen
+import com.example.lifetrack.ui.screens.SplashScreen
+
 
 @Composable
 fun AppNavigation() {
