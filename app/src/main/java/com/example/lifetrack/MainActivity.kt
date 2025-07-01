@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.lifetrack.ui.navigation.AppNavigation
 import com.example.lifetrack.ui.theme.LifeTrackTheme
 
 class MainActivity : ComponentActivity() {
