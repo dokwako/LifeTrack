@@ -23,7 +23,7 @@ fun SplashScreen(navController: NavController) {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.app_icon),
+            painter = painterResource(id = R.drawable.lifetrack_primaryl_logo1),
             contentDescription = "LifeTrack Logo",
             modifier = Modifier.size(150.dp),
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
