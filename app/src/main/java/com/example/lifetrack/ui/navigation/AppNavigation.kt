@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.lifetrack.ui.screens.HomeScreen
 import com.example.lifetrack.ui.screens.LoginScreen
 import com.example.lifetrack.ui.screens.SplashScreen
 
@@ -19,8 +20,8 @@ fun AppNavigation() {
         composable("splash") {
             SplashScreen(navController)
         }
-        composable("login") {
-            LoginScreen(navController)
+        composable("home") {
+            HomeScreen(navController)
         }
     }
 
