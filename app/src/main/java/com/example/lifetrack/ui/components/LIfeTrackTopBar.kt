@@ -41,7 +41,7 @@ fun LifeTrackTopBar(modifier: Modifier = Modifier) {
 
     ) {
         Image(
-            painter = painterResource(R.drawable.lifetrack_icon_logo),
+            painter = painterResource(R.drawable.lifetrack_icon_logo_dark),
             contentDescription = "LifeTrack Logo",
             modifier = Modifier
                 .size(100.dp)

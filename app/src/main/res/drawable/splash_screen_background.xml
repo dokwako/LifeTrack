@@ -1,0 +1,11 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/black" />
+<!--    <item>-->
+<!--        <bitmap-->
+<!--            android:filter="false"-->
+<!--            android:tileModeX="clamp"-->
+<!--            android:tileModeY="clamp"-->
+<!--            android:gravity="center"-->
+<!--            android:src="@drawable/lifetrack_icon_logo_dark" />-->
+<!--    </item>-->
+</layer-list>

@@ -1,4 +1,4 @@
-package com.example.lifetrack.ui.screens
+    package com.example.lifetrack.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -23,18 +23,17 @@ fun SplashScreen(navController: NavController) {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.lifetrack_primaryl_logo1),
+            painter = painterResource(id = R.drawable.lifetrack_primary_logo_dark),
             contentDescription = "LifeTrack Logo",
-            modifier = Modifier.size(150.dp),
+            modifier = Modifier.size(250.dp),
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
         )
     }
 
-    //auto nav after delay
     LaunchedEffect(Unit) {
         delay(3000)
-        navController.navigate("home") {
-            popUpTo("splash") { inclusive = true } //remove splash from backstack
+        navController.navigate("login") {
+            popUpTo("splash") { inclusive = true }
         }
     }
 }
