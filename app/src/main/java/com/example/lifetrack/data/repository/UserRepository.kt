@@ -3,6 +3,7 @@ package com.example.lifetrack.data.repository
 import com.example.lifetrack.data.model.User
 import com.example.lifetrack.data.model.AuthResult
 import com.example.lifetrack.data.model.Practitioner
+import com.example.lifetrack.data.model.Kiongozi
 import com.google.firebase.firestore.ListenerRegistration
 
 interface UserRepository {
@@ -19,4 +20,16 @@ interface UserRepository {
     suspend fun addPractitioner(practitioner: Practitioner): AuthResult
     suspend fun updatePractitioner(practitioner: Practitioner): AuthResult
     suspend fun deletePractitioner(practitioner: Practitioner): AuthResult
+
+    // Admin (Kiongozi) CRUD
+    suspend fun getAdmins(): List<Kiongozi>
+    suspend fun addAdmin(admin: Kiongozi): AuthResult
+    suspend fun updateAdmin(admin: Kiongozi): AuthResult
+    suspend fun deleteAdmin(admin: Kiongozi): AuthResult
+
+    // Patient CRUD
+    suspend fun getPatients(): List<User>
+    suspend fun addPatient(patient: User): AuthResult
+    suspend fun updatePatient(patient: User): AuthResult
+    suspend fun deletePatient(patient: User): AuthResult
 }

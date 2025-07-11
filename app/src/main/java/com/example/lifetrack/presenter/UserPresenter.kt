@@ -3,12 +3,12 @@ package com.example.lifetrack.presenter
 import com.example.lifetrack.data.model.AuthResult
 import com.example.lifetrack.data.model.Practitioner
 import com.example.lifetrack.data.model.User
+import com.example.lifetrack.data.model.Kiongozi
 import com.example.lifetrack.view.UserView
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.example.lifetrack.data.repository.UserRepository
 import com.example.lifetrack.data.repository.UserRepositoryImpl
 
 class UserPresenter(
@@ -102,6 +102,92 @@ class UserPresenter(
     fun deletePractitioner(practitioner: Practitioner, onResult: () -> Unit) {
         CoroutineScope(Dispatchers.Main).launch {
             val result = userRepository.deletePractitioner(practitioner)
+            when (result) {
+                is AuthResult.Success -> onResult()
+                is AuthResult.Failure -> view.showError(result.message)
+                AuthResult.Loading -> {}
+                is AuthResult.SuccessWithData<*> -> {}
+            }
+        }
+    }
+
+    fun getAdmins(onResult: (List<Kiongozi>) -> Unit) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val admins = userRepository.getAdmins()
+            onResult(admins)
+        }
+    }
+
+    fun addAdmin(admin: Kiongozi, onResult: (Kiongozi) -> Unit) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val result = userRepository.addAdmin(admin)
+            when (result) {
+                is AuthResult.SuccessWithData<*> -> onResult(result.data as Kiongozi)
+                is AuthResult.Failure -> view.showError(result.message)
+                AuthResult.Loading -> {}
+                is AuthResult.Success -> {}
+            }
+        }
+    }
+
+    fun updateAdmin(admin: Kiongozi, onResult: (Kiongozi) -> Unit) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val result = userRepository.updateAdmin(admin)
+            when (result) {
+                is AuthResult.SuccessWithData<*> -> onResult(result.data as Kiongozi)
+                is AuthResult.Failure -> view.showError(result.message)
+                AuthResult.Loading -> {}
+                is AuthResult.Success -> {}
+            }
+        }
+    }
+
+    fun deleteAdmin(admin: Kiongozi, onResult: () -> Unit) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val result = userRepository.deleteAdmin(admin)
+            when (result) {
+                is AuthResult.Success -> onResult()
+                is AuthResult.Failure -> view.showError(result.message)
+                AuthResult.Loading -> {}
+                is AuthResult.SuccessWithData<*> -> {}
+            }
+        }
+    }
+
+    fun getPatients(onResult: (List<User>) -> Unit) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val patients = userRepository.getPatients()
+            onResult(patients)
+        }
+    }
+
+    fun addPatient(patient: User, onResult: (User) -> Unit) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val result = userRepository.addPatient(patient)
+            when (result) {
+                is AuthResult.SuccessWithData<*> -> onResult(result.data as User)
+                is AuthResult.Failure -> view.showError(result.message)
+                AuthResult.Loading -> {}
+                is AuthResult.Success -> {}
+            }
+        }
+    }
+
+    fun updatePatient(patient: User, onResult: (User) -> Unit) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val result = userRepository.updatePatient(patient)
+            when (result) {
+                is AuthResult.SuccessWithData<*> -> onResult(result.data as User)
+                is AuthResult.Failure -> view.showError(result.message)
+                AuthResult.Loading -> {}
+                is AuthResult.Success -> {}
+            }
+        }
+    }
+
+    fun deletePatient(patient: User, onResult: () -> Unit) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val result = userRepository.deletePatient(patient)
             when (result) {
                 is AuthResult.Success -> onResult()
                 is AuthResult.Failure -> view.showError(result.message)

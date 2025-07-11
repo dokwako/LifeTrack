@@ -34,12 +34,13 @@ class AuthRepositoryImpl(
             val firebaseUser = result.user
             val userId = firebaseUser?.uid ?: throw IllegalStateException("User ID is null")
             val lifetrackID = generateLifeTrackID(email, userId)
-
+            result.user.hashCode()
             val user = User(
                 emailAddress = email,
                 phoneNumber = phoneNumber,
                 lifetrackId = lifetrackID,
                 fullName = displayName,
+                uuid = userId
             )
             firestore.collection("Patients").document(userId).set(user).await()
             AuthResult.Success
@@ -50,7 +51,7 @@ class AuthRepositoryImpl(
         } catch (e: FirebaseFirestoreException) {
             AuthResult.Failure("Firebase Firestore Error!! ${e.message}")
         } catch (e: Exception) {
-        AuthResult.Failure("Technical Registration Failure!! ${e.message}")
+        AuthResult.Failure("Technical Registration Failure!! ${e.message}, Please try again later.")
     }
     }
 
