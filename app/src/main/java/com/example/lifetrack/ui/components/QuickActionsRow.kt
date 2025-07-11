@@ -1,83 +1,108 @@
 package com.example.lifetrack.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Assistant
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.example.lifetrack.R
-import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-
+import androidx.compose.ui.composed
 
 @Composable
 fun QuickActionsRow(
     onEmergencyClick: () -> Unit,
-    onSearchCLick: () -> Unit,
-    OnAlmaClick: () -> Unit,
-    modifier: Modifier =Modifier
+    onSearchClick: () -> Unit,
+    onAlmaClick: () -> Unit
 ) {
-    Row(
-        modifier = modifier
+    Card(
+        modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
+            .padding(16.dp)
+            .height(80.dp),
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
     ) {
-        //Emergency Button
-        ActionButton(
-            iconRes = R.drawable.ic_emergency,
-            tint = Color(0xFFE53935),
-            onClick = onEmergencyClick,
-            modifier = Modifier.weight(1f)
-        )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        //Search Button
-        ActionButton(
-            iconRes = R.drawable.ic_search,
-            tint = MaterialTheme.colorScheme.primary,
-            onClick = onSearchCLick,
-            modifier = Modifier.weight(1f)
-        )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        //Alma chatbot
-        ActionButton(
-            iconRes = R.drawable.ic_alma,
-            tint = MaterialTheme.colorScheme.primary,
-            onClick = OnAlmaClick,
-            modifier = Modifier.weight(1f)
-        )
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ActionCard(
+                icon = Icons.Filled.Warning,
+                label = "Emergency",
+                tint = Color(0xFFFF5252),
+                onClick = onEmergencyClick,
+                modifier = Modifier.pulsate()
+            )
+            ActionCard(
+                icon = Icons.Filled.Search,
+                label = "Find Help",
+                tint = MaterialTheme.colorScheme.primary,
+                onClick = onSearchClick
+            )
+            ActionCard(
+                icon = Icons.Filled.Assistant,
+                label = "Alma AI",
+                tint = MaterialTheme.colorScheme.tertiary,
+                onClick = onAlmaClick
+            )
+        }
     }
 }
 
 @Composable
-fun ActionButton(
-    iconRes: Int,
+fun ActionCard(
+    icon: ImageVector,
+    label: String,
     tint: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    IconButton(
-        onClick = onClick,
+    Card(
         modifier = modifier
+            .width(100.dp)
+            .height(60.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = tint.copy(alpha = 0.1f)
+        ),
+        onClick = onClick
     ) {
-        Icon(
-            painter = painterResource(id = iconRes),
-            contentDescription = null,
-            tint = tint,
-            modifier = Modifier.size(32.dp)
-        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(icon, contentDescription = label, tint = tint)
+            Spacer(Modifier.height(4.dp))
+            Text(label, style = MaterialTheme.typography.labelSmall)
+        }
     }
+}
 
+fun Modifier.pulsate(): Modifier = composed {
+    val infiniteTransition = rememberInfiniteTransition()
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+    this.then(Modifier.size(60.dp * scale))
 }

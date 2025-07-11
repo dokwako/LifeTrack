@@ -60,7 +60,11 @@ fun AppNavigation(scope: CoroutineScope) {
             LoginScreen(navController, authPresenter)
         }
         composable("home") {
-            HomeScreen(navController)
+            HomeScreen(
+                onEmergency = { navController.navigate("emergency") },
+                onSearch = { navController.navigate("search")},
+                onAlma = { navController.navigate("alma") }
+            )
         }
         composable("signup") {
             RegistrationScreen(
