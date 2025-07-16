@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.composed
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun QuickActionsRow(
@@ -104,5 +106,7 @@ fun Modifier.pulsate(): Modifier = composed {
             repeatMode = RepeatMode.Reverse
         )
     )
-    this.then(Modifier.size(60.dp * scale))
+    this.graphicsLayer(
+        scaleX = scale,
+        scaleY = scale)
 }

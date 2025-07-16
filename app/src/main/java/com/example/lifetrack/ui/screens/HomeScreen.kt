@@ -5,37 +5,46 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.lifetrack.ui.components.HealthSummaryCard
 import com.example.lifetrack.ui.components.LifeTrackTopBar
 import com.example.lifetrack.ui.components.QuickActionsRow
 
 @Composable
 fun HomeScreen(
+    navController: NavController,
     onEmergency: () -> Unit,
     onSearch: () -> Unit,
     onAlma: () -> Unit
 ) {
     Scaffold(
-        topBar = { LifeTrackTopBar() },
-        bottomBar = {
-            QuickActionsRow(
-                onEmergencyClick = onEmergency,
-                onSearchClick = onSearch,
-                onAlmaClick = onAlma
-            )
-        }
-    ) { padding ->
+        topBar = { LifeTrackTopBar() }
+    ) { innerPadding ->
         LazyColumn(
-            modifier = Modifier.padding(padding),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
-        )
-        {
-//            item { HealthSummaryCard() }
-//            item { AppointmentsSection() }
-//            item { NearbyHospitals() }
+        ) {
+            item {
+                Text("Welcome Back!", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
+            }
+            item {
+                HealthSummaryCard()
+            }
+            item {
+                QuickActionsRow(
+                    onEmergencyClick = onEmergency,
+                    onSearchClick = onSearch,
+                    onAlmaClick = onAlma
+                )
+            }
+            // You can add more items here later
         }
     }
 }
