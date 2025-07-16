@@ -3,11 +3,10 @@ package com.example.lifetrack.data.repository
 import com.example.lifetrack.data.model.AuthResult
 import com.example.lifetrack.data.model.Practitioner
 import com.example.lifetrack.data.model.User
-import com.google.firebase.FirebaseNetworkException
+import com.example.lifetrack.data.model.Kiongozi
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import kotlinx.coroutines.tasks.await
-import android.util.Log
 
 
 class UserRepositoryImpl(
@@ -80,8 +79,13 @@ class UserRepositoryImpl(
     
     override suspend fun addPractitioner(practitioner: Practitioner): AuthResult {
         return try {
+            val result = auth.createUserWithEmailAndPassword(practitioner.emailAddress, practitioner.password).result
+            if (result == null || result.user == null) {
+                return AuthResult.Failure("FirebaseAuth error on creating user")
+            }
+            practitioner.uuid = result.user?.uid ?: java.util.UUID.randomUUID().toString()
             firestore.collection("Practitioners")
-                .document(auth.uid.toString())
+                .document(practitioner.uuid.toString())
                 .set(practitioner)
                 .await()
             AuthResult.SuccessWithData(practitioner)
@@ -93,7 +97,7 @@ class UserRepositoryImpl(
     override suspend fun updatePractitioner(practitioner: Practitioner): AuthResult {
         return try {
             firestore.collection("Practitioners")
-                .document(auth.uid.toString())
+                .document(practitioner.uuid.toString())
                 .set(practitioner)
                 .await()
             AuthResult.SuccessWithData(practitioner)
@@ -105,12 +109,108 @@ class UserRepositoryImpl(
     override suspend fun deletePractitioner(practitioner: Practitioner): AuthResult {
         return try {
             firestore.collection("Practitioners")
-                .document(practitioner.lifetrackId)
+                .document(practitioner.uuid.toString())
                 .delete()
                 .await()
             AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Failure(e.message ?: "Failed to delete practitioner")
+        }
+    }
+
+    override suspend fun getAdmins(): List<Kiongozi> {
+        return try {
+            val snapshot = firestore.collection("Kiongos").get().await()
+            snapshot.documents.mapNotNull { it.toObject(Kiongozi::class.java) }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    override suspend fun addAdmin(admin: Kiongozi): AuthResult {
+        return try {
+            firestore.collection("Kiongos")
+                .document(admin.id)
+                .set(admin)
+                .await()
+            AuthResult.SuccessWithData(admin)
+        } catch (e: Exception) {
+            AuthResult.Failure(e.message ?: "Failed to add admin")
+        }
+    }
+
+    override suspend fun updateAdmin(admin: Kiongozi): AuthResult {
+        return try {
+            firestore.collection("Kiongos")
+                .document(admin.id)
+                .set(admin)
+                .await()
+            AuthResult.SuccessWithData(admin)
+        } catch (e: Exception) {
+            AuthResult.Failure(e.message ?: "Failed to update admin")
+        }
+    }
+
+    override suspend fun deleteAdmin(admin: Kiongozi): AuthResult {
+        return try {
+            firestore.collection("Kiongos")
+                .document(admin.id)
+                .delete()
+                .await()
+            AuthResult.Success
+        } catch (e: Exception) {
+            AuthResult.Failure(e.message ?: "Failed to delete admin")
+        }
+    }
+
+    override suspend fun getPatients(): List<User> {
+        return try {
+            val snapshot = firestore.collection("Patients").get().await()
+            snapshot.documents.mapNotNull { it.toObject(User::class.java) }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    override suspend fun addPatient(patient: User): AuthResult {
+        return try {
+            val result = auth.createUserWithEmailAndPassword(patient.emailAddress, patient.password).result
+            if (result == null || result.user == null) {
+                return AuthResult.Failure("Failed to create user")
+            }
+            patient.uuid = result.user?.uid ?: java.util.UUID.randomUUID().toString()
+//            patient.lifetrackId =
+            firestore.collection("Patients")
+                .document(patient.uuid)
+                .set(patient)
+                .await()
+            AuthResult.SuccessWithData(patient)
+        } catch (e: Exception) {
+            AuthResult.Failure(e.message ?: "Failed to add patient")
+        }
+    }
+
+    override suspend fun updatePatient(patient: User): AuthResult {
+        return try {
+            firestore.collection("Patients")
+                .document(patient.uuid.toString())
+                .set(patient)
+                .await()
+            AuthResult.SuccessWithData(patient)
+        } catch (e: Exception) {
+            AuthResult.Failure(e.message ?: "Failed to update patient")
+        }
+    }
+
+    override suspend fun deletePatient(patient: User): AuthResult {
+        return try {
+            firestore.collection("Patients")
+                .document(patient.uuid.toString())
+                .delete()
+                .await()
+            AuthResult.Success
+        } catch (e: Exception) {
+            AuthResult.Failure(e.message ?: "Failed to delete patient")
         }
     }
 }

@@ -1,9 +1,11 @@
 package com.example.lifetrack.data.model
 
 data class User(
+    var uuid: String = "",
     val lifetrackId: String?,
     val emailAddress: String,
     val phoneNumber: String,
+    val password: String = "",
     val fullName: String = "",
     val profileImageUrl: String = "",
     val role: String = "patient",

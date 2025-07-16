@@ -1,40 +1,14 @@
 package com.example.lifetrack.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
-import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -47,39 +21,39 @@ import com.example.lifetrack.presenter.UserPresenter
 import com.example.lifetrack.view.UserView
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminScreen(navController: NavController) {
     var selectedTab by remember { mutableIntStateOf(0) }
-
     val tabs = listOf("Patients", "Practitioners", "Admins")
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Admin Panel") },
-                navigationIcon = { IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Filled.Edit, contentDescription = "Back")
-                } }
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
             )
         },
     ) { paddingValues ->
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)) {
-
-                    PrimaryTabRow(selectedTabIndex = selectedTab) {
-                        tabs.forEachIndexed { index, title ->
-                            Tab(selected = selectedTab == index, onClick = { selectedTab = index }) {
-                                Text(
-                                    text = title,
-                                    modifier = Modifier.padding(16.dp)
-                                )
-                            }
-                        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            PrimaryTabRow(selectedTabIndex = selectedTab) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(selected = selectedTab == index, onClick = { selectedTab = index }) {
+                        Text(
+                            text = title,
+                            modifier = Modifier.padding(16.dp)
+                        )
                     }
-
+                }
+            }
             when (selectedTab) {
                 0 -> ManagePatients()
                 1 -> ManagePractitioners()
@@ -91,8 +65,26 @@ fun AdminScreen(navController: NavController) {
 
 @Composable
 fun ManageAdmins() {
+    val userView = remember {
+        object : UserView {
+            override fun showUserData(user: User) {}
+            override fun updateUserUI(user: User) {}
+            override fun showError(message: String) {}
+            override fun showMessage(message: String) {}
+            override fun onLogout() {}
+        }
+    }
+    val userPresenter = remember { UserPresenter(userView, UserRepositoryImpl()) }
     var admins by remember { mutableStateOf(listOf<Kiongozi>()) }
     var showAddDialog by remember { mutableStateOf(false) }
+    var showEditDialog by remember { mutableStateOf(false) }
+    var adminToEdit by remember { mutableStateOf<Kiongozi?>(null) }
+
+    LaunchedEffect(Unit) {
+        userPresenter.getAdmins { fetchedList ->
+            admins = fetchedList
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
@@ -117,8 +109,20 @@ fun ManageAdmins() {
                             Text(admin.fullName, style = MaterialTheme.typography.titleMedium)
                             Text(admin.emailAddress, style = MaterialTheme.typography.bodySmall)
                         }
-                        IconButton(onClick = { admins = admins.minus(admin) }) {
-                            Icon(Icons.Filled.Edit, contentDescription = "Delete Admin")
+                        Row {
+                            IconButton(onClick = {
+                                adminToEdit = admin
+                                showEditDialog = true
+                            }) {
+                                Icon(Icons.Filled.Edit, contentDescription = "Edit Admin")
+                            }
+                            IconButton(onClick = {
+                                userPresenter.deleteAdmin(admin) {
+                                    admins = admins.filter { it.id != admin.id }
+                                }
+                            }) {
+                                Icon(Icons.Filled.Delete, contentDescription = "Delete Admin")
+                            }
                         }
                     }
                 }
@@ -135,7 +139,26 @@ fun ManageAdmins() {
         if (showAddDialog) {
             AddAdminDialog(
                 onDismiss = { showAddDialog = false },
-                onAdd = { newAdmin -> admins = admins + newAdmin }
+                onAdd = { newAdmin ->
+                    userPresenter.addAdmin(newAdmin) { added ->
+                        admins = admins + added
+                        showAddDialog = false
+                    }
+                }
+            )
+        }
+        if (showEditDialog && adminToEdit != null) {
+            EditAdminDialog(
+                admin = adminToEdit!!,
+                onDismiss = { showEditDialog = false },
+                onUpdate = { updatedAdmin ->
+                    userPresenter.updateAdmin(updatedAdmin) { updated ->
+                        admins = admins.map {
+                            if (it.id == updated.id) updated else it
+                        }
+                        showEditDialog = false
+                    }
+                }
             )
         }
     }
@@ -167,8 +190,13 @@ fun AddAdminDialog(onDismiss: () -> Unit, onAdd: (Kiongozi) -> Unit) {
             Button(
                 onClick = {
                     if (fullName.isNotBlank() && email.isNotBlank()) {
-                        onAdd(Kiongozi(id = java.util.UUID.randomUUID().toString(), fullName = fullName, emailAddress = email))
-                        onDismiss()
+                        onAdd(
+                            Kiongozi(
+                                id = java.util.UUID.randomUUID().toString(),
+                                fullName = fullName,
+                                emailAddress = email
+                            )
+                        )
                     }
                 }
             ) { Text("Add") }
@@ -180,9 +208,73 @@ fun AddAdminDialog(onDismiss: () -> Unit, onAdd: (Kiongozi) -> Unit) {
 }
 
 @Composable
+fun EditAdminDialog(
+    admin: Kiongozi,
+    onDismiss: () -> Unit,
+    onUpdate: (Kiongozi) -> Unit
+) {
+    var fullName by remember { mutableStateOf(admin.fullName) }
+    var email by remember { mutableStateOf(admin.emailAddress) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Edit Admin") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = fullName,
+                    onValueChange = { fullName = it },
+                    label = { Text("Full Name") }
+                )
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") }
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (fullName.isNotBlank() && email.isNotBlank()) {
+                        onUpdate(
+                            admin.copy(
+                                fullName = fullName,
+                                emailAddress = email
+                            )
+                        )
+                    }
+                }
+            ) { Text("Update") }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
+}
+
+@Composable
 fun ManagePatients() {
+    val userView = remember {
+        object : UserView {
+            override fun showUserData(user: User) {}
+            override fun updateUserUI(user: User) {}
+            override fun showError(message: String) {}
+            override fun showMessage(message: String) {}
+            override fun onLogout() {}
+        }
+    }
+    val userPresenter = remember { UserPresenter(userView, UserRepositoryImpl()) }
     var patients by remember { mutableStateOf(listOf<User>()) }
     var showAddDialog by remember { mutableStateOf(false) }
+    var showEditDialog by remember { mutableStateOf(false) }
+    var patientToEdit by remember { mutableStateOf<User?>(null) }
+
+    LaunchedEffect(Unit) {
+        userPresenter.getPatients { fetchedList ->
+            patients = fetchedList
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
@@ -191,10 +283,18 @@ fun ManagePatients() {
         ) {
             items(patients.size) { index ->
                 val patient = patients[index]
-                PatientCard(patient, onDelete = {
-                    patients = patients.minus(patient)
-                }, onUpdate = {
-                })
+                PatientCard(
+                    user = patient,
+                    onDelete = {
+                        userPresenter.deletePatient(patient) {
+                            patients = patients.filter { it.uuid != patient.uuid }
+                        }
+                    },
+                    onUpdate = {
+                        patientToEdit = patient
+                        showEditDialog = true
+                    }
+                )
             }
         }
 
@@ -208,9 +308,30 @@ fun ManagePatients() {
         }
 
         if (showAddDialog) {
-            AddPatientDialog(onDismiss = { showAddDialog = false }, onAdd = { newPatient ->
-                patients = patients.plus(newPatient)
-            })
+            AddPatientDialog(
+                onDismiss = { showAddDialog = false },
+                onAdd = { newPatient ->
+                    userPresenter.addPatient(newPatient) { added ->
+                        patients = patients + added
+                        showAddDialog = false
+                    }
+                }
+            )
+        }
+
+        if (showEditDialog && patientToEdit != null) {
+            EditPatientDialog(
+                patient = patientToEdit!!,
+                onDismiss = { showEditDialog = false },
+                onUpdate = { updatedPatient ->
+                    userPresenter.updatePatient(updatedPatient) { updated ->
+                        patients = patients.map {
+                            if (it.uuid == updated.uuid) updated else it
+                        }
+                        showEditDialog = false
+                    }
+                }
+            )
         }
     }
 }
@@ -247,11 +368,70 @@ fun AddPatientDialog(onDismiss: () -> Unit, onAdd: (User) -> Unit) {
             Button(
                 onClick = {
                     if (fullName.isNotBlank() && email.isNotBlank()) {
-                        onAdd(User(lifetrackId = java.util.UUID.randomUUID().toString(), fullName = fullName, phoneNumber = phone, emailAddress = email))
-                        onDismiss()
+                        onAdd(
+                            User(
+                                lifetrackId = java.util.UUID.randomUUID().toString(),
+                                fullName = fullName,
+                                phoneNumber = phone,
+                                emailAddress = email
+                            )
+                        )
                     }
                 }
             ) { Text("Add") }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
+}
+
+@Composable
+fun EditPatientDialog(
+    patient: User,
+    onDismiss: () -> Unit,
+    onUpdate: (User) -> Unit
+) {
+    var fullName by remember { mutableStateOf(patient.fullName) }
+    var email by remember { mutableStateOf(patient.emailAddress) }
+    var phone by remember { mutableStateOf(patient.phoneNumber) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Edit Patient") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = fullName,
+                    onValueChange = { fullName = it },
+                    label = { Text("Full Name") }
+                )
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") }
+                )
+                OutlinedTextField(
+                    value = phone,
+                    onValueChange = { phone = it },
+                    label = { Text("Phone Number") }
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (fullName.isNotBlank() && email.isNotBlank()) {
+                        onUpdate(
+                            patient.copy(
+                                fullName = fullName,
+                                emailAddress = email,
+                                phoneNumber = phone
+                            )
+                        )
+                    }
+                }
+            ) { Text("Update") }
         },
         dismissButton = {
             OutlinedButton(onClick = onDismiss) { Text("Cancel") }
@@ -309,10 +489,10 @@ fun PractitionerCard(user: Practitioner, onDelete: () -> Unit, onUpdate: () -> U
             }
             Row {
                 IconButton(onClick = onUpdate) {
-                    Icon(Icons.Filled.Edit, contentDescription = "Edit Patient")
+                    Icon(Icons.Filled.Edit, contentDescription = "Edit Practitioner")
                 }
                 IconButton(onClick = onDelete) {
-                    Icon(Icons.Filled.Delete, contentDescription = "Delete Patient")
+                    Icon(Icons.Filled.Delete, contentDescription = "Delete Practitioner")
                 }
             }
         }
@@ -351,11 +531,71 @@ fun AddPractitionerDialog(onDismiss: () -> Unit, onAdd: (Practitioner) -> Unit) 
             Button(
                 onClick = {
                     if (fullName.isNotBlank() && email.isNotBlank()) {
-                        onAdd(Practitioner(lifetrackId = java.util.UUID.randomUUID().toString(), fullName = fullName, phoneNumber = phone, emailAddress = email, hospitalId = java.util.UUID.randomUUID().toString()))
-                        onDismiss()
+                        onAdd(
+                            Practitioner(
+                                lifetrackId = java.util.UUID.randomUUID().toString(),
+                                fullName = fullName,
+                                phoneNumber = phone,
+                                emailAddress = email,
+                                hospitalId = java.util.UUID.randomUUID().toString()
+                            )
+                        )
                     }
                 }
             ) { Text("Add") }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
+}
+
+@Composable
+fun EditPractitionerDialog(
+    practitioner: Practitioner,
+    onDismiss: () -> Unit,
+    onUpdate: (Practitioner) -> Unit
+) {
+    var fullName by remember { mutableStateOf(practitioner.fullName) }
+    var email by remember { mutableStateOf(practitioner.emailAddress) }
+    var phone by remember { mutableStateOf(practitioner.phoneNumber) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Edit Practitioner") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = fullName,
+                    onValueChange = { fullName = it },
+                    label = { Text("Full Name") }
+                )
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") }
+                )
+                OutlinedTextField(
+                    value = phone,
+                    onValueChange = { phone = it },
+                    label = { Text("Phone Number") }
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (fullName.isNotBlank() && email.isNotBlank()) {
+                        onUpdate(
+                            practitioner.copy(
+                                fullName = fullName,
+                                emailAddress = email,
+                                phoneNumber = phone
+                            )
+                        )
+                    }
+                }
+            ) { Text("Update") }
         },
         dismissButton = {
             OutlinedButton(onClick = onDismiss) { Text("Cancel") }
@@ -444,57 +684,4 @@ fun ManagePractitioners() {
             )
         }
     }
-}
-@Composable
-fun EditPractitionerDialog(
-    practitioner: Practitioner,
-    onDismiss: () -> Unit,
-    onUpdate: (Practitioner) -> Unit
-) {
-    var fullName by remember { mutableStateOf(practitioner.fullName) }
-    var email by remember { mutableStateOf(practitioner.emailAddress) }
-    var phone by remember { mutableStateOf(practitioner.phoneNumber) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Edit Practitioner") },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = fullName,
-                    onValueChange = { fullName = it },
-                    label = { Text("Full Name") }
-                )
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Email") }
-                )
-                OutlinedTextField(
-                    value = phone,
-                    onValueChange = { phone = it },
-                    label = { Text("Phone Number") }
-                )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    if (fullName.isNotBlank() && email.isNotBlank()) {
-                        onUpdate(
-                            practitioner.copy(
-                                fullName = fullName,
-                                emailAddress = email,
-                                phoneNumber = phone
-                            )
-                        )
-                        onDismiss()
-                    }
-                }
-            ) { Text("Update") }
-        },
-        dismissButton = {
-            OutlinedButton(onClick = onDismiss) { Text("Cancel") }
-        }
-    )
 }

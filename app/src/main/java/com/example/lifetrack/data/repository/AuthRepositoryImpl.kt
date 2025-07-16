@@ -33,13 +33,14 @@ class AuthRepositoryImpl(
             val result = auth.createUserWithEmailAndPassword(email, password).await()
             val firebaseUser = result.user
             val userId = firebaseUser?.uid ?: throw IllegalStateException("User ID is null")
-            val lifetrackID = generateLifeTrackID(email, userId)
-
+            val lifetrackID = generateLifeTrackID()
+            result.user.hashCode()
             val user = User(
                 emailAddress = email,
                 phoneNumber = phoneNumber,
                 lifetrackId = lifetrackID,
                 fullName = displayName,
+                uuid = userId
             )
             firestore.collection("Patients").document(userId).set(user).await()
             AuthResult.Success
@@ -50,16 +51,17 @@ class AuthRepositoryImpl(
         } catch (e: FirebaseFirestoreException) {
             AuthResult.Failure("Firebase Firestore Error!! ${e.message}")
         } catch (e: Exception) {
-        AuthResult.Failure("Technical Registration Failure!! ${e.message}")
+        AuthResult.Failure("Technical Registration Failure!! ${e.message}, Please try again later.")
     }
     }
 
-    private fun generateLifeTrackID(email: String, fUUID: String): String {
-        val combinedString = "$email:$fUUID"
-        val hash = java.security.MessageDigest
-            .getInstance("SHA-256")
-            .digest(combinedString.toByteArray())
-        val uuid  = hash.fold(0L) { acc, byte -> (acc * 31 + byte.toUByte().toLong()) % 1_000_000_000_000L }
-        return  "LT_" + uuid.toString().padStart(16, '0')
+    private fun generateLifeTrackID(): String {
+//        val combinedString = "$email:$fUUID"
+        val uuid = java.util.UUID.randomUUID()
+//        val hash = java.security.MessageDigest
+//            .getInstance("SHA-256")
+//            .digest(combinedString.toByteArray())
+//        val uuid  = hash.fold(0L) { acc, byte -> (acc * 31 + byte.toUByte().toLong()) % 1_000_000_000_000L }
+        return  "LT_" + uuid.toString().padStart(12, '0')
     }
 }

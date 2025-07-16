@@ -1,4 +1,4 @@
-    package com.example.lifetrack.ui.screens
+package com.example.lifetrack.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -10,6 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -26,7 +27,8 @@ fun SplashScreen(navController: NavController) {
             painter = painterResource(id = R.drawable.lifetrack_primary_logo_dark),
             contentDescription = "LifeTrack Logo",
             modifier = Modifier.size(250.dp),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+            contentScale = ContentScale.Fit
         )
     }
 
