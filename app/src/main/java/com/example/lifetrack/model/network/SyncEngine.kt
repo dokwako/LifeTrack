@@ -14,7 +14,7 @@ class SyncEngine(private val apiService: ApiService) {
     }
 
     private suspend fun syncUserProfile() {
-        val userProfile = apiService.authUser("user_id")?: null
+        val userProfile = apiService.authUser("user_id")
         println("Synced user profile: $userProfile")
     }
 

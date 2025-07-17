@@ -1,6 +1,7 @@
 package com.example.lifetrack.presenter
 
 import com.example.lifetrack.model.data.AuthResult
+//import com.example.lifetrack.model.network.KtorClientFactory
 import com.example.lifetrack.model.repository.AuthRepository
 import com.example.lifetrack.view.AuthView
 import kotlinx.coroutines.CoroutineScope
@@ -12,6 +13,7 @@ import kotlinx.coroutines.cancel
 class AuthPresenter(
     var view: AuthView?,
     private val repository: AuthRepository,
+//    private val httpClient: KtorClientFactory = KtorClientFactory(),
     private val scope: CoroutineScope
 ) {
 
