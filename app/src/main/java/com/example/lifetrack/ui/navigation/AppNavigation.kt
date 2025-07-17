@@ -7,10 +7,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.lifetrack.data.repository.AuthRepositoryImpl
-import com.example.lifetrack.data.repository.UserRepositoryImpl
+import com.example.lifetrack.model.repository.AuthRepositoryImpl
+import com.example.lifetrack.model.repository.UserRepositoryImpl
 import com.example.lifetrack.presenter.AuthPresenter
-import com.example.lifetrack.ui.screens.*
+import com.example.lifetrack.ui.screens.AdminScreen
+import com.example.lifetrack.ui.screens.HomeScreen
+import com.example.lifetrack.ui.screens.LoginScreen
+import com.example.lifetrack.ui.screens.MenuScreen
+import com.example.lifetrack.ui.screens.ProfileScreen
+import com.example.lifetrack.ui.screens.RegistrationScreen
+import com.example.lifetrack.ui.screens.SplashScreen
+import com.example.lifetrack.ui.screens.RestoreScreen
 import com.example.lifetrack.view.AuthView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -37,14 +44,13 @@ fun AppNavigation(scope: CoroutineScope) {
             }
             override fun onAuthSuccess() {
                 navController.navigate("home") {
-                    popUpTo("splash") { inclusive = true } // Align with initial flow
+                    popUpTo("login") { inclusive = true }
                 }
             }
         },
         repository = authRepository,
         scope = scope
     )
-
     NavHost(
         navController = navController,
         startDestination = "splash"
@@ -52,35 +58,56 @@ fun AppNavigation(scope: CoroutineScope) {
         composable("splash") {
             SplashScreen(navController)
         }
-        composable("home") {
-            HomeScreen(
-                navController = navController,
-                onEmergency = { navController.navigate("login") }, // Redirect to login
-                onSearch = { navController.navigate("login") },
-                onAlma = { navController.navigate("login") }
-            )
-        }
+
         composable("login") {
             LoginScreen(navController, authPresenter)
         }
+
         composable("signup") {
-            RegistrationScreen(navController, authPresenter)
+            RegistrationScreen(
+                navController = navController,
+                presenter = authPresenter
+            )
         }
+
+        composable("home") {
+            HomeScreen(
+                navController = navController,
+                onEmergency = { navController.navigate("emergency") },
+                onSearch = { navController.navigate("search")},
+                 onAlma = { navController.navigate("alma") }
+            )
+        }
+
+        composable("profile"){
+            ProfileScreen(
+                navController = navController,
+//                userRepository = userRepository,
+//                onLogout = {
+//                    scope.launch {
+//                        authRepository.logout()
+//                        navController.navigate("login") {
+//                            popUpTo("home") { inclusive = true }
+//                        }
+//                    }
+//                }
+            )
+        }
+
+        composable("menu"){
+            MenuScreen(
+                navController = navController
+            )
+        }
+
         composable("reset") {
-            RestoreScreen(navController, userRepository)
+            RestoreScreen(
+                navController = navController,
+                userRepository = userRepository
+            )
         }
-        composable("admin") {
+        composable ("admin"){
             AdminScreen(navController)
-        }
-        // Placeholder screens for future implementation
-        composable("emergency") {
-            PlaceholderScreen(navController, "Emergency Screen")
-        }
-        composable("search") {
-            PlaceholderScreen(navController, "Search Screen")
-        }
-        composable("alma") {
-            PlaceholderScreen(navController, "Alma AI Screen")
         }
     }
 }
