@@ -1,23 +1,24 @@
 package com.example.lifetrack.model.network
 
 import kotlinx.coroutines.*
-import com.example.lifetrack.model.network.ApiService
+import io.ktor.client.HttpClient
 
 
-class SyncEngine(private val apiService: ApiService) {
+class SyncEngine(private val apiService: HttpClient) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
     fun startSync() {
         scope.launch {
-            syncUserProfile()
+//            syncUserProfile()
         }
     }
 
-    private suspend fun syncUserProfile() {
-        val userProfile = apiService.authUser("user_id")
-        println("Synced user profile: $userProfile")
+    companion object {
+        fun createDefault(): SyncEngine {
+            val client = KtorClientFactory().create()
+            return SyncEngine(client)
+        }
     }
-
     fun stopSync() {
         scope.cancel()
     }
