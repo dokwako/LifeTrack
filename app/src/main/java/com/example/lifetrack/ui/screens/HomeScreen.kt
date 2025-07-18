@@ -33,7 +33,10 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                Text("Welcome Back!", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                Text(
+                    "Welcome Back!",
+                    style = androidx.compose.material3.MaterialTheme.typography.headlineSmall,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Justify)
             }
             item {
                 HealthSummaryCard()
