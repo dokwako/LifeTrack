@@ -21,13 +21,11 @@ class SyncEngine(private val clientService: HttpClient) {
             return SyncEngine(client)
         }
     }
-
     fun startSync() {
         scope.launch {
             clientService.init()
         }
     }
-
     fun retrySync(maxAttempts: Int = 3, delayMillis: Long = 1000L) {
         scope.launch {
             var attempt = 0
