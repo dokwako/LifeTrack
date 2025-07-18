@@ -1,4 +1,3 @@
-// File: /home/revil/AndroidStudioProjects/LifeTrack/app/src/main/java/com/example/lifetrack/network/KtorClient.kt
 package com.example.lifetrack.model.network
 
 import io.ktor.client.*

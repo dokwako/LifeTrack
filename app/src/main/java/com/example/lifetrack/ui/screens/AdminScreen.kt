@@ -17,8 +17,15 @@ import com.example.lifetrack.model.data.Kiongozi
 import com.example.lifetrack.model.data.Practitioner
 import com.example.lifetrack.model.data.User
 import com.example.lifetrack.model.repository.UserRepositoryImpl
+import com.example.lifetrack.presenter.ExpertPresenter
+import com.example.lifetrack.presenter.KiongoziPresenter
 import com.example.lifetrack.presenter.UserPresenter
+import com.example.lifetrack.ui.state.UIState
 import com.example.lifetrack.view.UserView
+import com.example.lifetrack.view.KiongoziView
+import com.example.lifetrack.view.ExpertView
+import kotlinx.coroutines.launch
+import java.util.UUID
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,23 +72,34 @@ fun AdminScreen(navController: NavController) {
 
 @Composable
 fun ManageAdmins() {
-    val userView = remember {
-        object : UserView {
-            override fun showUserData(user: User) {}
-            override fun updateUserUI(user: User) {}
-            override fun showError(message: String) {}
-            override fun showMessage(message: String) {}
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val kiongoziView = remember {
+        object : KiongoziView {
+            override fun showKiongoziData(kiongozi: Kiongozi?) {}
+            override fun updateKiongoziUI(kiongozi: Kiongozi) {}
+            override fun showError(message: String) {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message)
+                }
+            }
+            override fun showMessage(message: String) {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message)
+                }
+            }
             override fun onLogout() {}
         }
     }
-    val userPresenter = remember { UserPresenter(userView, UserRepositoryImpl()) }
+
+    val kiongoziPresenter = remember { KiongoziPresenter(kiongoziView) }
     var admins by remember { mutableStateOf(listOf<Kiongozi>()) }
     var showAddDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
     var adminToEdit by remember { mutableStateOf<Kiongozi?>(null) }
 
     LaunchedEffect(Unit) {
-        userPresenter.getAdmins { fetchedList ->
+        kiongoziPresenter.getViongozi { fetchedList ->
             admins = fetchedList
         }
     }
@@ -117,7 +135,7 @@ fun ManageAdmins() {
                                 Icon(Icons.Filled.Edit, contentDescription = "Edit Admin")
                             }
                             IconButton(onClick = {
-                                userPresenter.deleteAdmin(admin) {
+                                kiongoziPresenter.deleteKiongozi(admin) {
                                     admins = admins.filter { it.id != admin.id }
                                 }
                             }) {
@@ -140,7 +158,7 @@ fun ManageAdmins() {
             AddAdminDialog(
                 onDismiss = { showAddDialog = false },
                 onAdd = { newAdmin ->
-                    userPresenter.addAdmin(newAdmin) { added ->
+                    kiongoziPresenter.addKiongozi(newAdmin) { added ->
                         admins = admins + added
                         showAddDialog = false
                     }
@@ -152,7 +170,7 @@ fun ManageAdmins() {
                 admin = adminToEdit!!,
                 onDismiss = { showEditDialog = false },
                 onUpdate = { updatedAdmin ->
-                    userPresenter.updateAdmin(updatedAdmin) { updated ->
+                    kiongoziPresenter.updateKiongozi(updatedAdmin) { updated ->
                         admins = admins.map {
                             if (it.id == updated.id) updated else it
                         }
@@ -192,7 +210,7 @@ fun AddAdminDialog(onDismiss: () -> Unit, onAdd: (Kiongozi) -> Unit) {
                     if (fullName.isNotBlank() && email.isNotBlank()) {
                         onAdd(
                             Kiongozi(
-                                id = java.util.UUID.randomUUID().toString(),
+                                id = UUID.randomUUID().toString(),
                                 fullName = fullName,
                                 emailAddress = email
                             )
@@ -255,13 +273,25 @@ fun EditAdminDialog(
 
 @Composable
 fun ManagePatients() {
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     val userView = remember {
         object : UserView {
             override fun showUserData(user: User) {}
             override fun updateUserUI(user: User) {}
-            override fun showError(message: String) {}
-            override fun showMessage(message: String) {}
-            override fun onLogout() {}
+            override fun showError(message: String) {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message)
+                }
+            }
+            override fun showMessage(message: String) {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message)
+                }
+            }
+            override fun onLogout() {
+
+            }
         }
     }
     val userPresenter = remember { UserPresenter(userView, UserRepositoryImpl()) }
@@ -370,7 +400,7 @@ fun AddPatientDialog(onDismiss: () -> Unit, onAdd: (User) -> Unit) {
                     if (fullName.isNotBlank() && email.isNotBlank()) {
                         onAdd(
                             User(
-                                lifetrackId = java.util.UUID.randomUUID().toString(),
+                                lifetrackId = UUID.randomUUID().toString(),
                                 fullName = fullName,
                                 phoneNumber = phone,
                                 emailAddress = email
@@ -533,11 +563,11 @@ fun AddPractitionerDialog(onDismiss: () -> Unit, onAdd: (Practitioner) -> Unit) 
                     if (fullName.isNotBlank() && email.isNotBlank()) {
                         onAdd(
                             Practitioner(
-                                lifetrackId = java.util.UUID.randomUUID().toString(),
+                                lifetrackId = UUID.randomUUID().toString(),
                                 fullName = fullName,
                                 phoneNumber = phone,
                                 emailAddress = email,
-                                hospitalId = java.util.UUID.randomUUID().toString()
+                                hospitalId = UUID.randomUUID().toString()
                             )
                         )
                     }
@@ -605,23 +635,44 @@ fun EditPractitionerDialog(
 
 @Composable
 fun ManagePractitioners() {
-    val userView = remember {
-        object : UserView {
-            override fun showUserData(user: User) {}
-            override fun updateUserUI(user: User) {}
-            override fun showError(message: String) {}
-            override fun showMessage(message: String) {}
-            override fun onLogout() {}
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState =  remember { SnackbarHostState() }
+    var uiState by remember { mutableStateOf<UIState>(UIState.Idle) }
+
+    val practitionerView = remember {
+        object : ExpertView {
+            override fun showLoading(isLoading: Boolean, message: String?) {
+                uiState = if (isLoading) UIState.Loading else UIState.Idle
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message ?: "Loading...")
+                }
+            }
+            override fun showError(message: String) {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message)
+                }
+            }
+            override fun updateExpertUI(it: Practitioner) {
+                TODO("@Kamaa update UI with practitioner data")
+            }
+            override fun showExpertData(it: Any) {
+                TODO("@Kamaa handle practitioner data display")
+            }
+            override fun showMessage(message: String) {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message)
+                }
+            }
         }
     }
-    val userPresenter = remember { UserPresenter(userView, UserRepositoryImpl()) }
+    val practitionerPresenter = remember { ExpertPresenter(practitionerView) }
     var practitioners by remember { mutableStateOf(listOf<Practitioner>()) }
     var showEditDialog by remember { mutableStateOf(false) }
     var practitionerToEdit by remember { mutableStateOf<Practitioner?>(null) }
     var showAddDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        userPresenter.getPractitioners { fetchedList ->
+        practitionerPresenter.getPractitioners { fetchedList ->
             practitioners = fetchedList
         }
     }
@@ -636,7 +687,7 @@ fun ManagePractitioners() {
                 PractitionerCard(
                     user = practitioner,
                     onDelete = {
-                        userPresenter.deletePractitioner(practitioner) {
+                        practitionerPresenter.deletePractitioner(practitioner) {
                             practitioners = practitioners.filter { it.lifetrackId != practitioner.lifetrackId }
                         }
                     },
@@ -661,7 +712,7 @@ fun ManagePractitioners() {
             AddPractitionerDialog(
                 onDismiss = { showAddDialog = false },
                 onAdd = { newPractitioner ->
-                    userPresenter.addPractitioner(newPractitioner) { added ->
+                    practitionerPresenter.addPractitioner(newPractitioner) { added ->
                         practitioners = practitioners + added
                         showAddDialog = false
                     }
@@ -674,7 +725,7 @@ fun ManagePractitioners() {
                 practitioner = practitionerToEdit!!,
                 onDismiss = { showEditDialog = false },
                 onUpdate = { updatedPractitioner ->
-                    userPresenter.updatePractitioner(updatedPractitioner) { updated ->
+                    practitionerPresenter.updatePractitioner(updatedPractitioner) { updated ->
                         practitioners = practitioners.map {
                             if (it.lifetrackId == updated.lifetrackId) updated else it
                         }
