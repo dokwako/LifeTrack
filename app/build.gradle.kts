@@ -1,13 +1,11 @@
 @file:Suppress("DSL_SCOPE_VIOLATION")
 
 plugins {
-    alias(libs.plugins.hilt) apply false
-    //alias(libs.plugins.ksp)
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
+    id("com.google.firebase.crashlytics") version "3.0.0" // Explicit version
 }
 
 android {
@@ -83,9 +81,9 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-crashlytics")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 
     // Hilt for DI
     implementation(libs.hilt.android)
@@ -94,15 +92,13 @@ dependencies {
     // WorkManager
     implementation(libs.work.runtime.ktx)
 
-    // Testing dependencies (optional)
+    // Testing dependencies
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.05.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.ui.test.junit4)
 
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-
-    id("com.google.devtools.ksp") version "1.9.22-1.0.17" // Replace with the latest version
+    debugImplementation(libs.ui.tooling)
+    debugImplementation(libs.ui.test.manifest)
 }
