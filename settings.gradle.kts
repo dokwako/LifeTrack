@@ -5,16 +5,17 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
-    }
-    versionCatalogs {
-        create("libs") {
-            from(files("gradle/libs.versions.toml")) // Single from() call
-        }
+        gradlePluginPortal()
     }
 }
+
+//enableFeaturePreview("VERSION_CATALOGS")
+
 rootProject.name = "LifeTrack"
 include(":app")

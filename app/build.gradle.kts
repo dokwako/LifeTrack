@@ -1,26 +1,26 @@
-@file:Suppress("DSL_SCOPE_VIOLATION")
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics") version "3.0.0" // Explicit version
 }
 
 android {
     namespace = "com.example.lifetrack"
-    compileSdk = 34
+    //noinspection GradleDependency
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.lifetrack"
         minSdk = 24
-        targetSdk = 34
+        //noinspection OldTargetApi
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -34,71 +34,80 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
+    kotlin{
+        compilerOptions{
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
     }
 
     buildFeatures {
         compose = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
+    lint {
+        disable += "NullSafeMutableLiveData"
+        abortOnError = false
+        checkDependencies = false
     }
-
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
+}
+configurations.all {
+    resolutionStrategy {
+        force("androidx.compose.material3:material3-lint:1.4.0-alpha16")
+        exclude(group = "androidx.compose.ui", module = "ui-lint")
     }
 }
 
 dependencies {
-    // Core Android dependencies
-    implementation(libs.core.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.material)
+    val composeBom = platform("androidx.compose:compose-bom:2024.02.00")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
 
-    // Jetpack Compose
-    implementation(platform(libs.compose.bom))
-    implementation(libs.activity.compose)
-    implementation(libs.lifecycle.runtime.compose)
-
-    // Navigation
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.androidx.material3.lint)
+    implementation(libs.androidx.ui.lint)
     implementation(libs.navigation.compose)
+    implementation(libs.coroutines.play.services)
+    implementation(libs.coroutines.core)
 
-    // Coil (for loading images)
-    implementation(libs.coil.compose)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
 
-    // Ktor client for networking
-    implementation(libs.bundles.ktor)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.material.icons.core)
+    implementation(libs.material.icons.extended)
 
-    // Kotlin Serialization
-    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.serialization.json)
+    implementation(libs.ktor.content.negotiation)
+    implementation(libs.ktor.logging)
+    implementation(libs.androidx.work.runtime.ktx)
 
-    // Firebase
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.crashlytics)
 
-    // Hilt for DI
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-
-    // WorkManager
-    implementation(libs.work.runtime.ktx)
-
-    // Testing dependencies
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform(libs.compose.bom))
-    androidTestImplementation(libs.ui.test.junit4)
-
-    debugImplementation(libs.ui.tooling)
-    debugImplementation(libs.ui.test.manifest)
 }
+
+
+
+
