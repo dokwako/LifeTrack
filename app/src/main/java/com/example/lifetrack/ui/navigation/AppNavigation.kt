@@ -21,6 +21,7 @@ import com.example.lifetrack.ui.screens.RestoreScreen
 import com.example.lifetrack.view.AuthView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+//import kotlinx.coroutines.Coroutine
 
 @Composable
 fun AppNavigation(scope: CoroutineScope) {
@@ -46,6 +47,10 @@ fun AppNavigation(scope: CoroutineScope) {
                 navController.navigate("home") {
                     popUpTo("login") { inclusive = true }
                 }
+            }
+
+            override fun onAuthSuccessWithData(data: String) {
+                TODO("Not yet implemented")
             }
         },
         repository = authRepository,

@@ -1,6 +1,7 @@
 package com.example.lifetrack.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -20,7 +21,10 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(navController: NavController) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .size(250.dp),
         contentAlignment = Alignment.Center
     ) {
         Image(
@@ -34,7 +38,7 @@ fun SplashScreen(navController: NavController) {
 
     LaunchedEffect(Unit) {
         delay(3000)
-        navController.navigate("home") {
+        navController.navigate("login") {
             popUpTo("splash") { inclusive = true }
         }
     }

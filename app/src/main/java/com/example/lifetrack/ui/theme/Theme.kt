@@ -12,10 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val LightColors = lightColorScheme(
-    primary = androidx.compose.ui.graphics.Color(0xFF4CAF50), // Green for health
+    primary = androidx.compose.ui.graphics.Color(0xFF4CAF50), // Green
     onPrimary = androidx.compose.ui.graphics.Color.White,
-    secondary = androidx.compose.ui.graphics.Color(0xFF0288D1), // Blue for trust
-    surface = androidx.compose.ui.graphics.Color(0xFFF5F5F5) // Light gray background
+    secondary = androidx.compose.ui.graphics.Color(0xFF0288D1), // Blue
+    background = androidx.compose.ui.graphics.Color(0xFFF5F5F5), // Light gray
+    surface = androidx.compose.ui.graphics.Color(0xFFE0E0E0)
 )
 
 private val DarkColors = darkColorScheme(

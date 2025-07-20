@@ -31,10 +31,8 @@ class AuthRepositoryImpl(
     ): AuthResult {
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
-            val firebaseUser = result.user
-            val userId = firebaseUser?.uid ?: throw IllegalStateException("User ID is null")
+            val userId = result.user?.uid ?: java.util.UUID.randomUUID().toString()
             val lifetrackID = generateLifeTrackID()
-            result.user.hashCode()
             val user = User(
                 emailAddress = email,
                 phoneNumber = phoneNumber,
@@ -52,10 +50,10 @@ class AuthRepositoryImpl(
             AuthResult.Failure("Firebase Firestore Error!! ${e.message}")
         } catch (e: Exception) {
         AuthResult.Failure("Technical Registration Failure!! ${e.message}, Please try again later.")
-    }
+        }
     }
 
-    private fun generateLifeTrackID(): String {
+    override fun generateLifeTrackID(): String {
 //        val combinedString = "$email:$fUUID"
         val uuid = java.util.UUID.randomUUID()
 //        val hash = java.security.MessageDigest

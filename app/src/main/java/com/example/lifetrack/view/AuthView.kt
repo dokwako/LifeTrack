@@ -4,4 +4,5 @@ interface AuthView {
     fun showLoading(isLoading: Boolean, message: String? = null)
     fun onAuthSuccess()
     fun showError(message: String)
+    fun onAuthSuccessWithData(data: String)
 }

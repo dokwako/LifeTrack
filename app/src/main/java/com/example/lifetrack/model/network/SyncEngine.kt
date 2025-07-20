@@ -59,6 +59,6 @@ class SyncEngine(private val clientService: HttpClient) {
     }
     suspend fun HttpClient.init() {
         val service = ApiService(this)
-        service.testService("admin:test")
+//        service.testService("admin:test")
     }
 }

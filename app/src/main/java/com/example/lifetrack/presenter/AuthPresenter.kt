@@ -59,4 +59,8 @@ class AuthPresenter(
         view = null
         scope.coroutineContext.cancel()
     }
+
+    fun generateLifeTrackID(): String {
+        return repository.generateLifeTrackID()
+    }
 }

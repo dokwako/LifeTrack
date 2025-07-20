@@ -1,6 +1,7 @@
 [versions]
 compose = "1.8.3"
 agp = "8.7.2"
+google-services = "4.4.3"
 kotlin = "2.2.0"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -24,6 +25,8 @@ ktor = "2.3.5"
 work-runtime-ktx  = "2.9.1"
 
 [libraries]
+android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+google-services = { module = "com.google.gms:google-services", version.ref = "google-services" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
