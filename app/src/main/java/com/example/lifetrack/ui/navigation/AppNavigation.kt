@@ -7,7 +7,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.lifetrack.model.data.AuthResult
 import com.example.lifetrack.model.repository.AuthRepositoryImpl
 import com.example.lifetrack.model.repository.UserRepositoryImpl
 import com.example.lifetrack.presenter.AuthPresenter
@@ -22,6 +21,7 @@ import com.example.lifetrack.ui.screens.RestoreScreen
 import com.example.lifetrack.view.AuthView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+//import kotlinx.coroutines.Coroutine
 
 @Composable
 fun AppNavigation(scope: CoroutineScope) {
@@ -43,16 +43,14 @@ fun AppNavigation(scope: CoroutineScope) {
             override fun showError(message: String) {
                 Toast.makeText(context, "Error: $message", Toast.LENGTH_LONG).show()
             }
-
             override fun onAuthSuccess() {
                 navController.navigate("home") {
                     popUpTo("login") { inclusive = true }
                 }
             }
+
             override fun onAuthSuccessWithData(data: String) {
-                navController.navigate("home") {
-                    popUpTo("login") { inclusive = true }
-                }
+                TODO("Not yet implemented")
             }
         },
         repository = authRepository,

@@ -53,6 +53,7 @@ android {
         abortOnError = false
         checkDependencies = false
     }
+    buildToolsVersion = "35.0.0"
 }
 configurations.all {
     resolutionStrategy {
