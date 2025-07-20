@@ -35,7 +35,7 @@ class KiongoziRepositoryImpl(
     }
     override suspend fun addKiongozi(admin: Kiongozi): AuthResult {
         return try {
-            firestore.collection("Kiongos").document(admin.id).set(admin).await()
+            firestore.collection("Kiongos").document(admin.uuid).set(admin).await()
             AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Failure(e.message ?: "Failed to add admin")
@@ -43,7 +43,7 @@ class KiongoziRepositoryImpl(
     }
     override suspend fun updateKiongozi(admin: Kiongozi): AuthResult {
         return try {
-            firestore.collection("Kiongos").document(admin.id).set(admin).await()
+            firestore.collection("Kiongos").document(admin.uuid).set(admin).await()
             AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Failure(e.message ?: "Failed to update admin")
@@ -51,7 +51,7 @@ class KiongoziRepositoryImpl(
     }
     override suspend fun deleteKiongozi(admin: Kiongozi): AuthResult {
         return try {
-            firestore.collection("Kiongos").document(admin.id).delete().await()
+            firestore.collection("Kiongos").document(admin.uuid).delete().await()
             AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Failure(e.message ?: "Failed to delete admin")
