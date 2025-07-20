@@ -42,7 +42,8 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
 //        syncEngine.stopSync()
+        super.onDestroy()
+
     }
 }

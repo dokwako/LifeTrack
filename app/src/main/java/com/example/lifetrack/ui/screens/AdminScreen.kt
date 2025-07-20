@@ -16,6 +16,8 @@ import androidx.navigation.NavController
 import com.example.lifetrack.model.data.Kiongozi
 import com.example.lifetrack.model.data.Practitioner
 import com.example.lifetrack.model.data.User
+import com.example.lifetrack.model.repository.AuthRepository
+import com.example.lifetrack.model.repository.AuthRepositoryImpl
 import com.example.lifetrack.model.repository.UserRepositoryImpl
 import com.example.lifetrack.presenter.ExpertPresenter
 import com.example.lifetrack.presenter.KiongoziPresenter
@@ -91,12 +93,12 @@ fun ManageAdmins() {
             override fun onLogout() {}
         }
     }
-
     val kiongoziPresenter = remember { KiongoziPresenter(kiongoziView) }
     var admins by remember { mutableStateOf(listOf<Kiongozi>()) }
     var showAddDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
     var adminToEdit by remember { mutableStateOf<Kiongozi?>(null) }
+    var isProcessing by remember { mutableStateOf(false) } // Track processing state
 
     LaunchedEffect(Unit) {
         kiongoziPresenter.getViongozi { fetchedList ->
@@ -114,7 +116,7 @@ fun ManageAdmins() {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 8.dp),
                 ) {
                     Row(
                         modifier = Modifier
@@ -128,17 +130,29 @@ fun ManageAdmins() {
                             Text(admin.emailAddress, style = MaterialTheme.typography.bodySmall)
                         }
                         Row {
-                            IconButton(onClick = {
-                                adminToEdit = admin
-                                showEditDialog = true
-                            }) {
+                            IconButton(
+                                onClick = {
+                                    if (!isProcessing) {
+                                        adminToEdit = admin
+                                        showEditDialog = true
+                                    }
+                                },
+                                enabled = !isProcessing
+                            ) {
                                 Icon(Icons.Filled.Edit, contentDescription = "Edit Admin")
                             }
-                            IconButton(onClick = {
-                                kiongoziPresenter.deleteKiongozi(admin) {
-                                    admins = admins.filter { it.id != admin.id }
-                                }
-                            }) {
+                            IconButton(
+                                onClick = {
+                                    if (!isProcessing) {
+                                        isProcessing = true
+                                        kiongoziPresenter.deleteKiongozi(admin) {
+                                            admins = admins.filter { it.uuid != admin.uuid }
+                                            isProcessing = false
+                                        }
+                                    }
+                                },
+                                enabled = !isProcessing
+                            ) {
                                 Icon(Icons.Filled.Delete, contentDescription = "Delete Admin")
                             }
                         }
@@ -158,9 +172,10 @@ fun ManageAdmins() {
             AddAdminDialog(
                 onDismiss = { showAddDialog = false },
                 onAdd = { newAdmin ->
+                    isProcessing = true
                     kiongoziPresenter.addKiongozi(newAdmin) { added ->
                         admins = admins + added
-                        showAddDialog = false
+                        isProcessing = false
                     }
                 }
             )
@@ -168,13 +183,16 @@ fun ManageAdmins() {
         if (showEditDialog && adminToEdit != null) {
             EditAdminDialog(
                 admin = adminToEdit!!,
-                onDismiss = { showEditDialog = false },
+                onDismiss = {
+                    showEditDialog = false
+                },
                 onUpdate = { updatedAdmin ->
+                    isProcessing = true
                     kiongoziPresenter.updateKiongozi(updatedAdmin) { updated ->
                         admins = admins.map {
-                            if (it.id == updated.id) updated else it
+                            if (it.uuid == updated.uuid) updated else it
                         }
-                        showEditDialog = false
+                        isProcessing = false
                     }
                 }
             )
@@ -186,6 +204,8 @@ fun ManageAdmins() {
 fun AddAdminDialog(onDismiss: () -> Unit, onAdd: (Kiongozi) -> Unit) {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var tel by remember { mutableStateOf("") }
+    val repo : AuthRepository = AuthRepositoryImpl()
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -200,7 +220,12 @@ fun AddAdminDialog(onDismiss: () -> Unit, onAdd: (Kiongozi) -> Unit) {
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("Email") }
+                    label = { Text("Email Address") }
+                )
+                OutlinedTextField(
+                    value = tel,
+                    onValueChange = { tel = it },
+                    label = { Text("Phone Number") }
                 )
             }
         },
@@ -210,9 +235,11 @@ fun AddAdminDialog(onDismiss: () -> Unit, onAdd: (Kiongozi) -> Unit) {
                     if (fullName.isNotBlank() && email.isNotBlank()) {
                         onAdd(
                             Kiongozi(
-                                id = UUID.randomUUID().toString(),
+                                uuid = UUID.randomUUID().toString(),
                                 fullName = fullName,
-                                emailAddress = email
+                                emailAddress = email,
+                                phoneNumber = tel,
+                                lifetrackID = repo.generateLifeTrackID(),
                             )
                         )
                     }
@@ -233,6 +260,8 @@ fun EditAdminDialog(
 ) {
     var fullName by remember { mutableStateOf(admin.fullName) }
     var email by remember { mutableStateOf(admin.emailAddress) }
+    var tel by remember { mutableStateOf(admin.phoneNumber)}
+    var buttonEnabled by remember { mutableStateOf(true) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -249,20 +278,28 @@ fun EditAdminDialog(
                     onValueChange = { email = it },
                     label = { Text("Email") }
                 )
+                OutlinedTextField(
+                    value = tel,
+                    onValueChange = { tel = it },
+                    label = { Text("Phone Number") }
+                )
             }
         },
         confirmButton = {
             Button(
                 onClick = {
                     if (fullName.isNotBlank() && email.isNotBlank()) {
+                        buttonEnabled = false
                         onUpdate(
                             admin.copy(
                                 fullName = fullName,
-                                emailAddress = email
+                                emailAddress = email,
+                                phoneNumber = tel
                             )
                         )
                     }
-                }
+                },
+                enabled = buttonEnabled
             ) { Text("Update") }
         },
         dismissButton = {
