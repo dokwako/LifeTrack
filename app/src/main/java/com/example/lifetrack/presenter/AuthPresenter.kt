@@ -40,7 +40,7 @@ class AuthPresenter(
         }
     }
 
-    private fun handleAuthResult(result: AuthResult) {
+    private suspend fun handleAuthResult(result: AuthResult) {
         view?.showLoading(false)
 
         when (result) {
