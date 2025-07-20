@@ -2,7 +2,7 @@ package com.example.lifetrack.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +22,7 @@ import com.example.lifetrack.R
 import kotlinx.coroutines.delay
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
+import com.example.lifetrack.ui.theme.Purple80
 
 @Composable
 fun LTBrandAppBar(modifier: Modifier = Modifier) {
@@ -38,7 +39,8 @@ fun LTBrandAppBar(modifier: Modifier = Modifier) {
 
     Column(
         modifier = modifier
-            .height(120.dp) // Fixed height instead of fillMaxSize
+            .fillMaxHeight()
+//            .height(120.dp) // Fixed height instead of fillMaxSize
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -46,7 +48,7 @@ fun LTBrandAppBar(modifier: Modifier = Modifier) {
             painter = painterResource(R.drawable.lifetrack_icon_logo_dark),
             contentDescription = "LifeTrack Logo",
             modifier = Modifier
-                .size(100.dp)
+                .size(200.dp)
                 .graphicsLayer(
                     scaleX = scale,
                     scaleY = scale,
@@ -56,12 +58,14 @@ fun LTBrandAppBar(modifier: Modifier = Modifier) {
         Text(
             text = "LifeTrack",
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = Purple80
         )
         Text(
             text = "Better Healthcare, Simplified",
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            color = MaterialTheme.colorScheme.onSurface
+//            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
         )
     }
 }

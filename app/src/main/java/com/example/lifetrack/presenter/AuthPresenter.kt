@@ -1,5 +1,6 @@
 package com.example.lifetrack.presenter
 
+
 import com.example.lifetrack.model.data.AuthResult
 //import com.example.lifetrack.model.network.KtorClientFactory
 import com.example.lifetrack.model.repository.AuthRepository
@@ -9,6 +10,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.cancel
+//import android.util.Log
+
 
 class AuthPresenter(
     var view: AuthView?,
@@ -16,7 +19,9 @@ class AuthPresenter(
 //    private val httpClient: KtorClientFactory = KtorClientFactory(),
     private val scope: CoroutineScope
 ) {
-
+    companion object{
+        private const val TAG = "AuthPresenter"
+    }
     fun login(email: String, password: String) {
         view?.showLoading(true, "Logging in...")
         scope.launch {
@@ -48,9 +53,11 @@ class AuthPresenter(
             is AuthResult.Loading -> {
                 view?.showLoading(true, "Please wait...")
             }
-
             is AuthResult.SuccessWithData<*> -> {
-                view?.onAuthSuccess()
+//                view?.showLoading(true, "Please wait while we log you in...")
+                val data = result.data as String
+//                Log.d(TAG, "User role: $data")
+                view?.onAuthSuccessWithData(data)
             }
         }
     }
@@ -63,4 +70,6 @@ class AuthPresenter(
     fun generateLifeTrackID(): String {
         return repository.generateLifeTrackID()
     }
+
+
 }

@@ -73,9 +73,8 @@ fun LoginScreen(navController: NavController, presenter: AuthPresenter) {
                         }
                     }
                 }
-
                 coroutineScope.launch {
-                    snackbarHostState.showSnackbar(data)
+                    snackbarHostState.showSnackbar("Logging you in...")
                 }
             }
         }
@@ -101,16 +100,16 @@ fun LoginScreen(navController: NavController, presenter: AuthPresenter) {
         ) {
             LTBrandAppBar(
                 modifier = Modifier
-                    .align(Alignment.Center)
+                    .align(Alignment.TopCenter)
                     .padding(top = 32.dp),
 
-            )
-//            Spacer(modifier = Modifier.height(24.dp))
+                )
+            Spacer(modifier = Modifier.height(50.dp))
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.75f)
+                    .fillMaxHeight(0.7f)
                     .wrapContentHeight()
                     .align(Alignment.BottomCenter),
                 verticalArrangement = Arrangement.Center,
@@ -124,7 +123,7 @@ fun LoginScreen(navController: NavController, presenter: AuthPresenter) {
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.fillMaxWidth(0.85f) // 85% width
                 )
-                Spacer(modifier = Modifier.height(28.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 OutlinedTextField(
                     value = password,

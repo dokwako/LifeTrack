@@ -43,15 +43,18 @@ fun AppNavigation(scope: CoroutineScope) {
             override fun showError(message: String) {
                 Toast.makeText(context, "Error: $message", Toast.LENGTH_LONG).show()
             }
+
             override fun onAuthSuccess() {
                 navController.navigate("home") {
                     popUpTo("login") { inclusive = true }
                 }
             }
-
             override fun onAuthSuccessWithData(data: String) {
-                TODO("Not yet implemented")
+                navController.navigate("home") {
+                    popUpTo("login") { inclusive = true }
+                }
             }
+
         },
         repository = authRepository,
         scope = scope
