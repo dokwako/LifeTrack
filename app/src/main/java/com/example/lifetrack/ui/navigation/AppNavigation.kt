@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.lifetrack.model.data.AuthResult
 import com.example.lifetrack.model.repository.AuthRepositoryImpl
 import com.example.lifetrack.model.repository.UserRepositoryImpl
 import com.example.lifetrack.presenter.AuthPresenter
@@ -42,7 +43,13 @@ fun AppNavigation(scope: CoroutineScope) {
             override fun showError(message: String) {
                 Toast.makeText(context, "Error: $message", Toast.LENGTH_LONG).show()
             }
+
             override fun onAuthSuccess() {
+                navController.navigate("home") {
+                    popUpTo("login") { inclusive = true }
+                }
+            }
+            override fun onAuthSuccessWithData(data: String) {
                 navController.navigate("home") {
                     popUpTo("login") { inclusive = true }
                 }

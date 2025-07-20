@@ -15,6 +15,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.lifetrack.model.data.AuthResult
 import com.example.lifetrack.presenter.AuthPresenter
 import com.example.lifetrack.ui.state.UIState
 import kotlinx.coroutines.delay
@@ -60,6 +61,15 @@ fun RegistrationScreen(navController: NavController, presenter: AuthPresenter) {
                 uiState = UIState.Success
                 navController.navigate("login") {
                     popUpTo("signup") { inclusive = true }
+                }
+            }
+
+            override fun onAuthSuccessWithData(data: String) {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = data.toString(),
+                        duration = SnackbarDuration.Long
+                    )
                 }
             }
         }

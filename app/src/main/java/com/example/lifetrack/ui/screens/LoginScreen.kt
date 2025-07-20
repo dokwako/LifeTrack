@@ -22,11 +22,11 @@ import com.example.lifetrack.ui.state.UIState
 import com.example.lifetrack.view.AuthView
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun LoginScreen(navController: NavController, presenter: AuthPresenter) {
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val userRole = remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
@@ -46,8 +46,36 @@ fun LoginScreen(navController: NavController, presenter: AuthPresenter) {
 
             override fun onAuthSuccess() {
                 uiState = UIState.Success
-                navController.navigate("home") {
-                    popUpTo("login") { inclusive = true }
+
+            }
+
+            override fun onAuthSuccessWithData(data: String) {
+                userRole.value = data
+                coroutineScope.launch {
+                    when(data){
+                        "Kiongos" -> {
+                            navController.navigate("admin") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        }
+                        "Patients" -> {
+                            navController.navigate("home") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        }
+                        "Practitioners" -> {
+                            navController.navigate("expert") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        }
+                        else -> {
+                            snackbarHostState.showSnackbar("Unknown role: $data")
+                        }
+                    }
+                }
+
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(data)
                 }
             }
         }
