@@ -1,7 +1,18 @@
 package com.example.lifetrack.model.data
 
+//@JvmOverloads
 data class Kiongozi(
-    val id: String,
+    val uuid: String,
     val fullName: String,
     val emailAddress: String,
-)
+    val lifetrackID : String = "",
+    val passwordHash: String = "",
+//    val uuid: String = "",
+    val phoneNumber: String = ""
+){
+    constructor() : this(
+        uuid = "",
+        fullName = "",
+        emailAddress = ""
+    )
+}

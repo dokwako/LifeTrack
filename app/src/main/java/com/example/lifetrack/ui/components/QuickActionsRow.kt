@@ -29,8 +29,8 @@ fun QuickActionsRow(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .padding(16.dp)
+            .fillMaxWidth()
+            .padding(10.dp)
             .height(90.dp),
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(8.dp),
@@ -76,7 +76,7 @@ fun ActionCard(
 ) {
     Card(
         modifier = modifier
-            .width(90.dp)
+            .width(70.dp)
             .height(60.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
