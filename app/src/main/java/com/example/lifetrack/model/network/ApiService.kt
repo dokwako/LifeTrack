@@ -6,19 +6,14 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.*
 
 class ApiService(private val client: HttpClient) {
-    suspend fun testService(userId: String): HttpResponse{
-        return try {
-            client.get {
-                url {
-                    protocol = URLProtocol.HTTPS
-                    host = "api.lifetrack.app"
-                    path("/v1/chats", userId)
-                }
+    suspend fun authUser(userId: String): HttpResponse {
+        return client.get {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "api.lifetrack.app"
+                path("chats", userId)
             }
-        }catch (e: Exception) {
-            throw e
         }
     }
-
 
 }
