@@ -15,9 +15,9 @@ class AuthRepositoryImpl(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) : AuthRepository {
-//    companion object {
-//        private const val TAG = "AuthRepositoryImpl"
-//    }
+    companion object {
+        private const val TAG = "AuthRepositoryImpl"
+    }
 
     override suspend fun login(email: String, password: String): AuthResult {
         return try {
