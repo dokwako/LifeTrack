@@ -8,6 +8,7 @@ import com.example.lifetrack.view.KiongoziView
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 class KiongoziPresenter(
@@ -15,49 +16,51 @@ class KiongoziPresenter(
     private val kiongoziRepository: KiongoziRepository = KiongoziRepositoryImpl()
 ) {
     private val kiongoziListener: ListenerRegistration? = null
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    suspend fun getCurrentKiongozi() {
-        CoroutineScope(Dispatchers.Main)
-        kiongoziRepository.getCurrentKiongozi()
-    }
+//    fun getCurrentKiongozi() {
+//        coroutineScope.launch {
+//            kiongoziRepository.getCurrentKiongozi()
+//        }
+//    }
 
-    fun startKiongoziObserver(kiongoziId: String) {
-        CoroutineScope(Dispatchers.Main).launch {
-            val kiongozi = kiongoziRepository.getKiongoziById(kiongoziId)
-            if (kiongozi != null) {
-                view.showKiongoziData(kiongozi)
-            } else {
-                view.showError("Kiongozi not found (observer)")
-            }
-        }
-    }
+//    fun startKiongoziObserver(kiongoziId: String) {
+//        coroutineScope.launch {
+//            val kiongozi = kiongoziRepository.getKiongoziById(kiongoziId)
+//            if (kiongozi != null) {
+//                view.showKiongoziData(kiongozi)
+//            } else {
+//                view.showError("Kiongozi not found (observer)")
+//            }
+//        }
+//    }
 
     fun stopKiongoziObserver() {
-        CoroutineScope(Dispatchers.Main).launch {
+        coroutineScope.launch {
             kiongoziListener?.remove()
         }
     }
 
-    fun getKiongoziById(kiongoziId: String) {
-        CoroutineScope(Dispatchers.Main).launch {
-            val kiongozi = kiongoziRepository.getKiongoziById(kiongoziId)
-            if (kiongozi != null) {
-                view.showKiongoziData(kiongozi)
-            } else {
-                view.showError("Kiongozi not found (by Id)")
-            }
-        }
-    }
+//    fun getKiongoziById(kiongoziId: String) {
+//        coroutineScope.launch {
+//            val kiongozi = kiongoziRepository.getKiongoziById(kiongoziId)
+//            if (kiongozi != null) {
+//                view.showKiongoziData(kiongozi)
+//            } else {
+//                view.showError("Kiongozi not found (by Id)")
+//            }
+//        }
+//    }
 
     fun getViongozi(onResult: (List<Kiongozi>) -> Unit) {
-        CoroutineScope(Dispatchers.Main).launch {
+        coroutineScope.launch {
             val viongozi = kiongoziRepository.getViongozi()
             onResult(viongozi)
         }
     }
 
     fun addKiongozi(kiongozi: Kiongozi, onAdd: (Kiongozi) -> Unit) {
-        CoroutineScope(Dispatchers.Main).launch {
+        coroutineScope.launch {
             val result = kiongoziRepository.addKiongozi(kiongozi)
             when (result) {
                 is AuthResult.Success -> view.showMessage("Kiongozi added successfully")
@@ -69,7 +72,7 @@ class KiongoziPresenter(
     }
 
     fun updateKiongozi(kiongozi: Kiongozi, onUpdate: (Kiongozi) -> Unit) {
-        CoroutineScope(Dispatchers.Main).launch {
+        coroutineScope.launch {
             val result = kiongoziRepository.updateKiongozi(kiongozi)
             when (result) {
                 is AuthResult.Success -> view.showMessage("Kiongozi updated successfully")
@@ -81,7 +84,7 @@ class KiongoziPresenter(
     }
 
     fun deleteKiongozi(kiongozi: Kiongozi, onDelete: () -> Unit) {
-        CoroutineScope(Dispatchers.Main).launch {
+        coroutineScope.launch {
             val result = kiongoziRepository.deleteKiongozi(kiongozi)
             when (result) {
                 is AuthResult.Success -> view.showMessage("Kiongozi deleted successfully")
@@ -93,7 +96,7 @@ class KiongoziPresenter(
     }
 
     fun logout() {
-        CoroutineScope(Dispatchers.Main).launch {
+        coroutineScope.launch {
             kiongoziRepository.logout()
         }
     }

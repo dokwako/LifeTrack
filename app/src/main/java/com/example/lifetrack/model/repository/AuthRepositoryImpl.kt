@@ -15,9 +15,9 @@ class AuthRepositoryImpl(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) : AuthRepository {
-    companion object {
-        private const val TAG = "AuthRepositoryImpl"
-    }
+//    companion object {
+//        private const val TAG = "AuthRepositoryImpl"
+//    }
 
     override suspend fun login(email: String, password: String): AuthResult {
         return try {
@@ -25,7 +25,7 @@ class AuthRepositoryImpl(
             val userId = result.user?.uid
             if (userId != null){
                 val userRole = verifyRole(userId)
-                Log.d(TAG, "$userRole: ${result.user?.uid}")
+//                Log.d(TAG, "$userRole: ${result.user?.uid}")
                 AuthResult.SuccessWithData(userRole)
             } else {
                 AuthResult.Failure("Login failed: No User with the ID found")
@@ -90,7 +90,7 @@ class AuthRepositoryImpl(
                 val documentSnapshot = db.collection(collection).document(userId).get().await()
                 if (documentSnapshot.exists()) {
                     userRole = collection
-                    Log.d(TAG, "$collection ***:*** $userRole")
+//                    Log.d(TAG, "$collection ***:*** $userRole")
     //                    AuthResult.SuccessWithData(collection)
                 }
             }

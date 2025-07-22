@@ -120,7 +120,7 @@ fun AppNavigation(scope: CoroutineScope) {
                 userRepository = userRepository
             )
         }
-        composable ("admin"){
+        composable ("kiongozi"){
             AdminScreen(navController)
         }
         composable("expert") { ExpertScreen(navController) }

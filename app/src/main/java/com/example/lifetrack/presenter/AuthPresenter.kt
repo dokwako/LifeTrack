@@ -54,9 +54,8 @@ class AuthPresenter(
                 view?.showLoading(true, "Please wait...")
             }
             is AuthResult.SuccessWithData<*> -> {
-//                view?.showLoading(true, "Please wait while we log you in...")
+                view?.showLoading(true, "Please wait while we log you in...")
                 val data = result.data as String
-//                Log.d(TAG, "User role: $data")
                 view?.onAuthSuccessWithData(data)
             }
         }

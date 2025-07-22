@@ -1,5 +1,8 @@
 package com.example.lifetrack.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -7,10 +10,15 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.Password
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.lifetrack.model.data.Kiongozi
@@ -33,8 +41,27 @@ import java.util.UUID
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminScreen(navController: NavController) {
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val view: KiongoziView = object : KiongoziView {
+        override fun updateKiongoziUI(kiongozi: Kiongozi) {
+
+        }
+        override fun showMessage(message: String) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar( message)
+            }
+        }
+        override fun showError(message: String) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar( message)
+            }
+        }
+        override fun onLogout() {}
+    }
     var selectedTab by remember { mutableIntStateOf(0) }
     val tabs = listOf("Patients", "Practitioners", "Admins")
+
 
     Scaffold(
         topBar = {
@@ -78,7 +105,7 @@ fun ManageAdmins() {
     val snackbarHostState = remember { SnackbarHostState() }
     val kiongoziView = remember {
         object : KiongoziView {
-            override fun showKiongoziData(kiongozi: Kiongozi?) {}
+//            override fun showKiongoziData(kiongozi: Kiongozi?) {}
             override fun updateKiongoziUI(kiongozi: Kiongozi) {}
             override fun showError(message: String) {
                 coroutineScope.launch {
@@ -205,6 +232,8 @@ fun AddAdminDialog(onDismiss: () -> Unit, onAdd: (Kiongozi) -> Unit) {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var tel by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var passwordVisibility by remember { mutableStateOf(false) }
     val repo : AuthRepository = AuthRepositoryImpl()
 
     AlertDialog(
@@ -227,6 +256,25 @@ fun AddAdminDialog(onDismiss: () -> Unit, onAdd: (Kiongozi) -> Unit) {
                     onValueChange = { tel = it },
                     label = { Text("Phone Number") }
                 )
+
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
+                    leadingIcon = { Icon(Icons.Outlined.Password, contentDescription = null) },
+                    visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                            Icon(
+                                imageVector = if (passwordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                contentDescription = "Toggle Password Visibility"
+                            )
+                        }
+                    },
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium,
+                )
+//                }
             }
         },
         confirmButton = {
@@ -235,11 +283,11 @@ fun AddAdminDialog(onDismiss: () -> Unit, onAdd: (Kiongozi) -> Unit) {
                     if (fullName.isNotBlank() && email.isNotBlank()) {
                         onAdd(
                             Kiongozi(
-                                uuid = UUID.randomUUID().toString(),
                                 fullName = fullName,
                                 emailAddress = email,
                                 phoneNumber = tel,
                                 lifetrackID = repo.generateLifeTrackID(),
+                                passwordHash = password
                             )
                         )
                     }

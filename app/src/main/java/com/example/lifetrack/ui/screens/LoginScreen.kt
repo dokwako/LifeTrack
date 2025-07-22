@@ -21,9 +21,11 @@ import com.example.lifetrack.ui.components.LTBrandAppBar
 import com.example.lifetrack.ui.state.UIState
 import com.example.lifetrack.view.AuthView
 import kotlinx.coroutines.launch
+import android.util.Log
 
 @Composable
 fun LoginScreen(navController: NavController, presenter: AuthPresenter) {
+
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val userRole = remember { mutableStateOf("") }
@@ -54,7 +56,7 @@ fun LoginScreen(navController: NavController, presenter: AuthPresenter) {
                 coroutineScope.launch {
                     when(data){
                         "Kiongos" -> {
-                            navController.navigate("admin") {
+                            navController.navigate("kiongozi") {
                                 popUpTo("login") { inclusive = true }
                             }
                         }
