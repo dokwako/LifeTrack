@@ -2,7 +2,7 @@
 compose = "1.8.3"
 agp = "8.7.2"
 google-services = "4.4.3"
-kotlin = "2.2.0"
+kotlin = "2.0.0"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -22,7 +22,7 @@ navCompose = "2.9.1"
 coroutines = "1.10.2"
 material-icons = "1.7.8"
 ktor = "2.3.5"
-work-runtime-ktx  = "2.9.1"
+work-runtime-ktx  = "2.10.2"
 
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
