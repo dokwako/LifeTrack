@@ -10,9 +10,6 @@ data class Kiongozi(
 //    val uuid: String = "",
     val phoneNumber: String = ""
 ){
-    constructor() : this(
-        uuid = "",
-        fullName = "",
-        emailAddress = ""
+    constructor() : this("","",""
     )
 }

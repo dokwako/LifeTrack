@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
+//    id("kotlin-kapt")
+//    alias(libs.plugins.hilt)
 }
 
 android {
@@ -72,18 +74,18 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.lint)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.firebase.auth)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.androidx.material3.lint)
     implementation(libs.googleid)
+    implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
     implementation(libs.firebase.firestore.ktx)
-    implementation(libs.androidx.material3.lint)
-    implementation(libs.androidx.ui.lint)
     implementation(libs.navigation.compose)
     implementation(libs.coroutines.play.services)
     implementation(libs.coroutines.core)
@@ -109,6 +111,10 @@ dependencies {
     //charts
     implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation ("androidx.compose.ui:ui-viewbinding:1.6.0")
+
+//    implementation(libs.hilt.android)
+//    kapt(libs.hilt.compiler)
+//    implementation(libs.hilt.navigation.compose)
 
 
 }

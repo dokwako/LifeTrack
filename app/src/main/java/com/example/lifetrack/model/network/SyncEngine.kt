@@ -52,13 +52,13 @@ class SyncEngine(private val clientService: HttpClient) {
             ExistingPeriodicWorkPolicy.REPLACE,
             workRequest
         )
-
-        fun stopSync() {
-            scope.cancel()
-        }
     }
-    suspend fun HttpClient.init() {
+
+    fun HttpClient.init() {
         val service = ApiService(this)
 //        service.testService("admin:test")
+    }
+    fun stopSync() {
+        scope.cancel()
     }
 }

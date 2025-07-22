@@ -227,7 +227,7 @@ fun HomeScreen(
                             .fillMaxWidth(0.9f)
                             .wrapContentHeight(),
                         elevation = CardDefaults.cardElevation(8.dp),
-                        onClick = { navController.navigate("practitioner_dashboard") } // Changed from "login"
+                        onClick = { navController.navigate("expert") } // Changed from "login"
                     ) {
                         Row(
                             modifier = Modifier

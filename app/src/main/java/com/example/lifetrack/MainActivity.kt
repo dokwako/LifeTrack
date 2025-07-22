@@ -8,27 +8,28 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-//import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-//import androidx.compose.ui.tooling.preview.Preview
-//import com.example.lifetrack.model.network.SyncEngine
-import com.example.lifetrack.ui.navigation.AppNavigation
-import com.example.lifetrack.ui.theme.LifeTrackTheme
+//import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-//import kotlinx.coroutines.launch
+import com.example.lifetrack.ui.navigation.AppNavigation
+import com.example.lifetrack.ui.theme.LifeTrackTheme
+import com.example.lifetrack.model.network.SyncEngine
+import kotlinx.coroutines.launch
 
-
+//@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-//    val syncEngine = SyncEngine.createDefault()
+    private val syncEngine by lazy { SyncEngine.createDefault() }
+
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-//        scope.launch { syncEngine.startSync() }
-
+        scope.launch {
+            syncEngine.startSync()
+        }
         setContent {
             LifeTrackTheme {
                 Surface(
@@ -42,8 +43,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
-//        syncEngine.stopSync()
+        syncEngine.stopSync()
         super.onDestroy()
-
     }
 }
