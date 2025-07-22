@@ -1,11 +1,17 @@
 package com.example.lifetrack.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Password
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,6 +38,12 @@ fun RegistrationScreen(navController: NavController, presenter: AuthPresenter) {
     var password by remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
     var uiState by remember { mutableStateOf<UIState>(UIState.Idle) }
+    var isVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        delay(300) // Slight delay for a smooth fade-in
+        isVisible = true
+    }
 
     LaunchedEffect(presenter) {
         presenter.view = object : com.example.lifetrack.view.AuthView {
@@ -41,33 +53,28 @@ fun RegistrationScreen(navController: NavController, presenter: AuthPresenter) {
 
             override fun showError(message: String) {
                 coroutineScope.launch {
-                    snackbarHostState.showSnackbar(message,)
+                    snackbarHostState.showSnackbar(message)
                 }
             }
 
             override fun onAuthSuccess() {
                 coroutineScope.launch {
-                    val snackbarJob = launch {
-                        snackbarHostState.showSnackbar(
-                            message = "Signup successful! You can now log in.",
-                            duration = SnackbarDuration.Indefinite
-                        )
-                    }
-                    delay(10_000)
+                    snackbarHostState.showSnackbar(
+                        message = "Signup successful! You can now log in.",
+                        duration = SnackbarDuration.Indefinite
+                    )
+                    delay(2000)
                     snackbarHostState.currentSnackbarData?.dismiss()
-                    snackbarJob.cancel()
-                }
-                
-                uiState = UIState.Success
-                navController.navigate("login") {
-                    popUpTo("signup") { inclusive = true }
+                    navController.navigate("login") {
+                        popUpTo("signup") { inclusive = true }
+                    }
                 }
             }
 
             override fun onAuthSuccessWithData(data: String) {
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(
-                        message = data.toString(),
+                        message = data,
                         duration = SnackbarDuration.Long
                     )
                 }
@@ -85,131 +92,191 @@ fun RegistrationScreen(navController: NavController, presenter: AuthPresenter) {
                     shape = MaterialTheme.shapes.medium
                 )
             }
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
-        Box(
+        Card(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(MaterialTheme.colorScheme.background),
-            contentAlignment = Alignment.Center
+                .padding(horizontal = 16.dp, vertical = 24.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            shape = MaterialTheme.shapes.medium
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-                    .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
+                    .fillMaxSize()
                     .padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    imageVector = Icons.Outlined.Person,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(100.dp)
-                        .padding(8.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-
-                Text(
-                    text = "Let's get you started",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
-                OutlinedTextField(
-                    value = fullName,
-                    onValueChange = { fullName = it },
-                    label = { Text("Full Name") },
-                    singleLine = true,
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Email") },
-                    singleLine = true,
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = phoneNumber,
-                    onValueChange = { phoneNumber = it },
-                    label = { Text("Phone Number") },
-                    singleLine = true,
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Password") },
-                    visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-                    trailingIcon = {
-                        val icon =
-                            if (passwordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                        IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                            Icon(imageVector = icon, contentDescription = "Toggle Password Visibility")
-                        }
-                    },
-                    singleLine = true,
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Button(
-                    onClick = {
-                        if (fullName.isNotEmpty() && email.isNotEmpty() && phoneNumber.isNotEmpty() && password.isNotEmpty()) {
-                            presenter.signUp(email, password, phoneNumber, fullName)
-                        } else {
-                            coroutineScope.launch {
-                                snackbarHostState.showSnackbar("All fields are required.")
-                            }
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .clip(MaterialTheme.shapes.medium),
-                    enabled = uiState != UIState.Loading
+                AnimatedVisibility(
+                    visible = isVisible,
+                    enter = fadeIn(animationSpec = tween(600))
                 ) {
-                    if (uiState == UIState.Loading) {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(20.dp),
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text(text = "Sign Up", style = MaterialTheme.typography.labelLarge)
-                    }
+                    Icon(
+                        imageVector = Icons.Outlined.Person,
+                        contentDescription = "User Icon",
+                        modifier = Modifier
+                            .size(120.dp)
+                            .padding(bottom = 24.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
                 }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 24.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+
+                AnimatedVisibility(
+                    visible = isVisible,
+                    enter = fadeIn(animationSpec = tween(800))
                 ) {
                     Text(
-                        text = "Already have an account?",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface
+                        text = "Let's Get You Started",
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(bottom = 32.dp)
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    TextButton(onClick = { navController.navigate("login") }) {
-                        Text(
-                            text = "Sign In",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary
+                }
+
+                AnimatedVisibility(
+                    visible = isVisible,
+                    enter = fadeIn(animationSpec = tween(1000))
+                ) {
+                    OutlinedTextField(
+                        value = fullName,
+                        onValueChange = { fullName = it },
+                        label = { Text("Full Name") },
+                        leadingIcon = { Icon(Icons.Outlined.Person, contentDescription = null) },
+                        singleLine = true,
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .padding(bottom = 16.dp)
+                    )
+                }
+
+                AnimatedVisibility(
+                    visible = isVisible,
+                    enter = fadeIn(animationSpec = tween(1200))
+                ) {
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text("Email") },
+                        leadingIcon = { Icon(Icons.Outlined.Email, contentDescription = null) },
+                        singleLine = true,
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .padding(bottom = 16.dp)
+                    )
+                }
+
+                AnimatedVisibility(
+                    visible = isVisible,
+                    enter = fadeIn(animationSpec = tween(1400))
+                ) {
+                    OutlinedTextField(
+                        value = phoneNumber,
+                        onValueChange = { phoneNumber = it },
+                        label = { Text("Phone Number") },
+                        leadingIcon = { Icon(Icons.Outlined.Phone, contentDescription = null) },
+                        singleLine = true,
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .padding(bottom = 16.dp)
+                    )
+                }
+
+                AnimatedVisibility(
+                    visible = isVisible,
+                    enter = fadeIn(animationSpec = tween(1600))
+                ) {
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = { Text("Password") },
+                        leadingIcon = { Icon(Icons.Outlined.Password, contentDescription = null) },
+                        visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                                Icon(
+                                    imageVector = if (passwordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                    contentDescription = "Toggle Password Visibility"
+                                )
+                            }
+                        },
+                        singleLine = true,
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .padding(bottom = 24.dp)
+                    )
+                }
+
+                AnimatedVisibility(
+                    visible = isVisible,
+                    enter = fadeIn(animationSpec = tween(1800))
+                ) {
+                    Button(
+                        onClick = {
+                            if (fullName.isNotEmpty() && email.isNotEmpty() && phoneNumber.isNotEmpty() && password.isNotEmpty()) {
+                                presenter.signUp(email, password, phoneNumber, fullName)
+                            } else {
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar("All fields are required.")
+                                }
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .height(56.dp)
+                            .clip(MaterialTheme.shapes.medium),
+                        enabled = uiState != UIState.Loading,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                         )
+                    ) {
+                        if (uiState == UIState.Loading) {
+                            CircularProgressIndicator(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text(
+                                text = "Sign Up",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = isVisible,
+                    enter = fadeIn(animationSpec = tween(2000))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Already have an account?",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        TextButton(onClick = { navController.navigate("login") }) {
+                            Text(
+                                text = "Sign In",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
             }

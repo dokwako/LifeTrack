@@ -6,11 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.LocalHospital
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.People
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -61,19 +57,19 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp), // Increased spacing
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-//            item {
-//                AnimatedVisibility(
-//                    visible = isVisible,
-//                    enter = fadeIn(animationSpec = tween(1000))
-//                ) {
-//                    Text(
-//                        text = "Welcome Back!",
-//                        style = MaterialTheme.typography.headlineSmall,
-//                        textAlign = TextAlign.Center,
-//                        modifier = Modifier.padding(bottom = 14.dp)
-//                    )
-//                }
-//            }
+            //item {
+            //    AnimatedVisibility(
+            //        visible = isVisible,
+            //        enter = fadeIn(animationSpec = tween(1000))
+            //    ) {
+            //        Text(
+            //            text = "Welcome Back!",
+            //            style = MaterialTheme.typography.headlineSmall,
+            //            textAlign = TextAlign.Center,
+            //            modifier = Modifier.padding(bottom = 14.dp)
+            //        )
+            //    }
+            //}
             item {
                 AnimatedVisibility(
                     visible = isVisible,
@@ -88,11 +84,11 @@ fun HomeScreen(
                     visible = isVisible,
                     enter = fadeIn(animationSpec = tween(1400))
                 ) {
-//                    Text(
-//                        text = "Quick Actions",
-//                        style = MaterialTheme.typography.titleLarge,
-//                        modifier = Modifier.padding(bottom = 16.dp)
-//                    )
+                    //Text(
+                    //    text = "Quick Actions",
+                    //    style = MaterialTheme.typography.titleLarge,
+                    //    modifier = Modifier.padding(bottom = 16.dp)
+                    //)
                     QuickActionsRow(
                         onEmergencyClick = onEmergency,
                         onSearchClick = onSearch,
@@ -111,7 +107,7 @@ fun HomeScreen(
                             .fillMaxWidth(0.9f)
                             .wrapContentHeight(),
                         elevation = CardDefaults.cardElevation(8.dp),
-                        onClick = { navController.navigate("login") }
+                        onClick = { navController.navigate("medical_timeline") } // Changed from "login"
                     ) {
                         Row(
                             modifier = Modifier
@@ -151,7 +147,7 @@ fun HomeScreen(
                             .fillMaxWidth(0.9f)
                             .wrapContentHeight(),
                         elevation = CardDefaults.cardElevation(8.dp),
-                        onClick = { navController.navigate("login") }
+                        onClick = { navController.navigate("telemedicine") } // Changed from "login"
                     ) {
                         Row(
                             modifier = Modifier
@@ -191,7 +187,7 @@ fun HomeScreen(
                             .fillMaxWidth(0.9f)
                             .wrapContentHeight(),
                         elevation = CardDefaults.cardElevation(8.dp),
-                        onClick = { navController.navigate("login") }
+                        onClick = { navController.navigate("epidemic_alert") } // Changed from "login"
                     ) {
                         Row(
                             modifier = Modifier
@@ -231,7 +227,7 @@ fun HomeScreen(
                             .fillMaxWidth(0.9f)
                             .wrapContentHeight(),
                         elevation = CardDefaults.cardElevation(8.dp),
-                        onClick = { navController.navigate("login") }
+                        onClick = { navController.navigate("practitioner_dashboard") } // Changed from "login"
                     ) {
                         Row(
                             modifier = Modifier
@@ -271,7 +267,7 @@ fun HomeScreen(
                             .fillMaxWidth(0.9f)
                             .wrapContentHeight(),
                         elevation = CardDefaults.cardElevation(8.dp),
-                        onClick = { navController.navigate("login") }
+                        onClick = { navController.navigate("info_hub") } // Changed from "login"
                     ) {
                         Row(
                             modifier = Modifier
@@ -311,7 +307,7 @@ fun HomeScreen(
                             .fillMaxWidth(0.9f)
                             .wrapContentHeight(),
                         elevation = CardDefaults.cardElevation(8.dp),
-                        onClick = { navController.navigate("login") }
+                        onClick = { navController.navigate("additional_features") } // Changed from "login"
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(

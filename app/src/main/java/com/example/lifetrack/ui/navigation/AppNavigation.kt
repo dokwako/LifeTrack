@@ -18,6 +18,12 @@ import com.example.lifetrack.ui.screens.ProfileScreen
 import com.example.lifetrack.ui.screens.RegistrationScreen
 import com.example.lifetrack.ui.screens.SplashScreen
 import com.example.lifetrack.ui.screens.RestoreScreen
+import com.example.lifetrack.ui.screens.PractitionerDashboardScreen
+import com.example.lifetrack.ui.screens.MedicalTimelineScreen
+import com.example.lifetrack.ui.screens.TelemedicineScreen
+import com.example.lifetrack.ui.screens.EpidemicAlertScreen
+import com.example.lifetrack.ui.screens.InfoHubScreen
+import com.example.lifetrack.ui.screens.AdditionalFeaturesScreen
 import com.example.lifetrack.view.AuthView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -83,7 +89,7 @@ fun AppNavigation(scope: CoroutineScope) {
                 navController = navController,
                 onEmergency = { navController.navigate("emergency") },
                 onSearch = { navController.navigate("search")},
-                 onAlma = { navController.navigate("alma") }
+                onAlma = { navController.navigate("alma") }
             )
         }
 
@@ -117,5 +123,11 @@ fun AppNavigation(scope: CoroutineScope) {
         composable ("admin"){
             AdminScreen(navController)
         }
+        composable("practitioner_dashboard") { PractitionerDashboardScreen(navController) }
+        composable("medical_timeline") { MedicalTimelineScreen(navController) }
+        composable("telemedicine") { TelemedicineScreen(navController) }
+        composable("epidemic_alert") { EpidemicAlertScreen(navController) }
+        composable("info_hub") { InfoHubScreen(navController) }
+        composable("additional_features") { AdditionalFeaturesScreen(navController) }
     }
 }
