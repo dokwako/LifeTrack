@@ -11,7 +11,17 @@ data class User(
     val role: String = "patient",
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
-)
+){
+    constructor() : this(
+        lifetrackId = "",
+        emailAddress = "",
+        phoneNumber = "",
+        password = "",
+        fullName = "",
+        profileImageUrl = "",
+        role = "patient"
+    )
+}
 
 
 

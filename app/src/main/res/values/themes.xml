@@ -3,9 +3,10 @@
     <style name="Theme.LifeTrack" parent="android:Theme.Material.Light.NoActionBar">
 <!--        <item name="android:windowBackground">@android:color/black</item>-->
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowBackground">@drawable/icon_100x100</item>
+        <item name="android:windowBackground">@drawable/lt_splash</item>
         <item name="android:windowFullscreen">@null</item>
         <item name="android:windowNoTitle">true</item>
+<!--        <item name="android:scaleType">@android:centerInside</item>-->
 
     </style>
 </resources>

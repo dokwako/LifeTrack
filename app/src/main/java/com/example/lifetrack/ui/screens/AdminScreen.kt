@@ -1,8 +1,5 @@
 package com.example.lifetrack.ui.screens
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -31,11 +28,14 @@ import com.example.lifetrack.presenter.ExpertPresenter
 import com.example.lifetrack.presenter.KiongoziPresenter
 import com.example.lifetrack.presenter.UserPresenter
 import com.example.lifetrack.ui.state.UIState
+import com.example.lifetrack.ui.components.PatientCard
+import com.example.lifetrack.ui.components.PractitionerCard
 import com.example.lifetrack.view.UserView
 import com.example.lifetrack.view.KiongoziView
 import com.example.lifetrack.view.ExpertView
 import kotlinx.coroutines.launch
 import java.util.UUID
+import android.util.Log
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -200,6 +200,7 @@ fun ManageAdmins() {
                 onDismiss = { showAddDialog = false },
                 onAdd = { newAdmin ->
                     isProcessing = true
+                    kiongoziView.showMessage("Adding new admin...")
                     kiongoziPresenter.addKiongozi(newAdmin) { added ->
                         admins = admins + added
                         isProcessing = false
@@ -256,7 +257,6 @@ fun AddAdminDialog(onDismiss: () -> Unit, onAdd: (Kiongozi) -> Unit) {
                     onValueChange = { tel = it },
                     label = { Text("Phone Number") }
                 )
-
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
@@ -389,6 +389,7 @@ fun ManagePatients() {
         userPresenter.getPatients { fetchedList ->
             patients = fetchedList
         }
+        Log.d("Patients", "Patients: $patients")
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -456,6 +457,8 @@ fun AddPatientDialog(onDismiss: () -> Unit, onAdd: (User) -> Unit) {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var passwordVisibility by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -477,18 +480,36 @@ fun AddPatientDialog(onDismiss: () -> Unit, onAdd: (User) -> Unit) {
                     onValueChange = { phone = it },
                     label = { Text("Phone Number") }
                 )
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
+                    leadingIcon = { Icon(Icons.Outlined.Password, contentDescription = null) },
+                    visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                            Icon(
+                                imageVector = if (passwordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                contentDescription = "Toggle Password Visibility"
+                            )
+                        }
+                    },
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium,
+                )
             }
         },
         confirmButton = {
             Button(
                 onClick = {
-                    if (fullName.isNotBlank() && email.isNotBlank()) {
+                    if (fullName.isNotBlank() && email.isNotBlank() && password.isNotBlank()) {
                         onAdd(
                             User(
-                                lifetrackId = UUID.randomUUID().toString(),
+                                lifetrackId = "",
                                 fullName = fullName,
                                 phoneNumber = phone,
-                                emailAddress = email
+                                emailAddress = email,
+                                password = password,
                             )
                         )
                     }
@@ -555,70 +576,12 @@ fun EditPatientDialog(
 }
 
 @Composable
-fun PatientCard(user: User, onDelete: () -> Unit, onUpdate: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(user.fullName, style = MaterialTheme.typography.titleMedium)
-                Text(user.emailAddress, style = MaterialTheme.typography.bodySmall)
-            }
-            Row {
-                IconButton(onClick = onUpdate) {
-                    Icon(Icons.Filled.Edit, contentDescription = "Edit Patient")
-                }
-                IconButton(onClick = onDelete) {
-                    Icon(Icons.Filled.Delete, contentDescription = "Delete Patient")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun PractitionerCard(user: Practitioner, onDelete: () -> Unit, onUpdate: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(user.fullName, style = MaterialTheme.typography.titleMedium)
-                Text(user.emailAddress, style = MaterialTheme.typography.bodySmall)
-            }
-            Row {
-                IconButton(onClick = onUpdate) {
-                    Icon(Icons.Filled.Edit, contentDescription = "Edit Practitioner")
-                }
-                IconButton(onClick = onDelete) {
-                    Icon(Icons.Filled.Delete, contentDescription = "Delete Practitioner")
-                }
-            }
-        }
-    }
-}
-
-@Composable
 fun AddPractitionerDialog(onDismiss: () -> Unit, onAdd: (Practitioner) -> Unit) {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var passwordVisibility by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -640,6 +603,23 @@ fun AddPractitionerDialog(onDismiss: () -> Unit, onAdd: (Practitioner) -> Unit) 
                     onValueChange = { phone = it },
                     label = { Text("Phone Number") }
                 )
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
+                    leadingIcon = { Icon(Icons.Outlined.Password, contentDescription = null) },
+                    visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                            Icon(
+                                imageVector = if (passwordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                contentDescription = "Toggle Password Visibility"
+                            )
+                        }
+                    },
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium,
+                )
             }
         },
         confirmButton = {
@@ -652,7 +632,8 @@ fun AddPractitionerDialog(onDismiss: () -> Unit, onAdd: (Practitioner) -> Unit) 
                                 fullName = fullName,
                                 phoneNumber = phone,
                                 emailAddress = email,
-                                hospitalId = UUID.randomUUID().toString()
+                                hospitalId = UUID.randomUUID().toString(),
+                                passwordHash = password
                             )
                         )
                     }
@@ -723,7 +704,6 @@ fun ManagePractitioners() {
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState =  remember { SnackbarHostState() }
     var uiState by remember { mutableStateOf<UIState>(UIState.Idle) }
-
     val practitionerView = remember {
         object : ExpertView {
             override fun showLoading(isLoading: Boolean, message: String?) {

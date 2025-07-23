@@ -56,11 +56,12 @@ class ExpertRepositoryImpl(
 
     override suspend fun addPractitioner(practitioner: Practitioner): AuthResult {
         return try {
-            val result = auth.createUserWithEmailAndPassword(practitioner.emailAddress, practitioner.password).result
+            val result = auth.createUserWithEmailAndPassword(practitioner.emailAddress, practitioner.passwordHash).result
             if (result == null || result.user == null) {
                 return AuthResult.Failure("FirebaseAuth error on creating user")
             }
             practitioner.uuid = result.user?.uid ?: java.util.UUID.randomUUID().toString()
+            practitioner.passwordHash = "null"
             firestore.collection("Practitioners")
                 .document(practitioner.uuid)
                 .set(practitioner)
@@ -85,10 +86,14 @@ class ExpertRepositoryImpl(
 
     override suspend fun deletePractitioner(practitioner: Practitioner): AuthResult {
         return try {
+//            auth.app.
             firestore.collection("Practitioners")
                 .document(practitioner.uuid)
                 .delete()
                 .await()
+            if (auth.currentUser != null && auth.currentUser?.uid == practitioner.uuid) {
+                auth.currentUser?.delete()?.await()
+            }
             AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Failure(e.message ?: "Failed to delete practitioner")

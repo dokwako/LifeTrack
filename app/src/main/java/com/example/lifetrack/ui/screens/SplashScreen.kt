@@ -38,7 +38,7 @@ fun SplashScreen(navController: NavController) {
 
     LaunchedEffect(Unit) {
         delay(3000)
-        navController.navigate("login") {
+        navController.navigate("kiongozi") {
             popUpTo("splash") { inclusive = true }
         }
     }

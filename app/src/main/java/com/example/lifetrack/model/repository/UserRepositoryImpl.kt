@@ -1,5 +1,6 @@
 package com.example.lifetrack.model.repository
 
+import android.util.Log
 import com.example.lifetrack.model.data.AuthResult
 import com.example.lifetrack.model.data.User
 import com.google.firebase.auth.FirebaseAuth
@@ -27,30 +28,6 @@ class UserRepositoryImpl(
             null
         }
     }
-
-    override suspend fun updateUser(userId: String, user: User): AuthResult {
-        return try {
-            val updatedUser = user.copy(updatedAt = System.currentTimeMillis())
-            firestore.collection("Patients").document(userId).set(updatedUser).await()
-            AuthResult.Success
-        } catch (e: Exception) {
-            AuthResult.Failure(e.message ?: "Failed to update user")
-        }
-    }
-
-    override suspend fun deleteUser(userId: String): AuthResult {
-        return try {
-            firestore.collection("Patients").document(userId).delete().await()
-            AuthResult.Success
-        } catch (e: Exception) {
-            AuthResult.Failure(e.message ?: "Failed to delete user")
-        }
-    }
-
-    override suspend fun logout() {
-        auth.signOut()
-    }
-
     override suspend fun sendPasswordReset(email: String): AuthResult {
         return try {
             auth.sendPasswordResetEmail(email).await()
@@ -70,20 +47,14 @@ class UserRepositoryImpl(
     }
 
     override suspend fun getPatients(): List<User> {
-        return try {
-            val patients = mutableListOf<User>()
-            val snapshot = firestore.collection("Patients").get().await()
-            snapshot.forEach { document ->
-                val patient = document.toObject(User::class.java)
-                patients.add(patient)
-            }
-            patients
-        } catch (e: Exception) {
-            AuthResult.Failure(e.message ?: "Failed to get patients")
-            emptyList()
+        val patients = mutableListOf<User>()
+        val snapshot = firestore.collection("Patients").get().await()
+        snapshot.forEach { document ->
+            val patient = document.toObject(User::class.java)
+            patients.add(patient)
         }
+        return patients
     }
-
 
     override suspend fun addPatient(patient: User): AuthResult {
         return try {
@@ -93,12 +64,12 @@ class UserRepositoryImpl(
                 phoneNumber = patient.phoneNumber,
                 displayName = patient.fullName
             )
+
             AuthResult.SuccessWithData(result)
         } catch (e: Exception) {
             AuthResult.Failure(e.message ?: "Failed to save patient data")
         }
     }
-
 
     override suspend fun updatePatient(patient: User): AuthResult {
         return try {
@@ -118,9 +89,15 @@ class UserRepositoryImpl(
                 .document(patient.uuid)
                 .delete()
                 .await()
+            if (auth.currentUser != null && auth.currentUser?.uid == patient.uuid) {
+                auth.currentUser?.delete()?.await()
+            }
             AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Failure(e.message ?: "Failed to delete patient")
         }
+    }
+    override suspend fun logout() {
+        auth.signOut()
     }
 }

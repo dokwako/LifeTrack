@@ -53,7 +53,7 @@ class AuthRepositoryImpl(
                 uuid = userId
             )
             firestore.collection("Patients").document(userId).set(user).await()
-            AuthResult.SuccessWithData(userId)
+            AuthResult.SuccessWithData(user)
         } catch (e: FirebaseAuthWeakPasswordException) {
             Log.e(TAG, "$e.message")
             AuthResult.Failure("Password is too weak. Please use a stronger password.")

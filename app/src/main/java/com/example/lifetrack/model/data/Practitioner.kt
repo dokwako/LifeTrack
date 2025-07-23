@@ -8,9 +8,19 @@ data class Practitioner(
     val fullName: String = "",
     val phoneNumber: String = "",
     val emailAddress: String = "",
-    val password: String = "",
+    var passwordHash: String = "",
     val role: String = "practitioner",
     val profileImageUrl: String = "",
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
-)
+){
+    constructor() : this(
+        hospitalId = "",
+        lifetrackId = "",
+        fullName = "",
+        phoneNumber = "",
+        emailAddress = "",
+        passwordHash = "",
+        profileImageUrl = ""
+    )
+}

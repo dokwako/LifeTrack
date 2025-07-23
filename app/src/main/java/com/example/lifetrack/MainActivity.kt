@@ -25,7 +25,6 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
         scope.launch {
             syncEngine.startSync()

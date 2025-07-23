@@ -12,20 +12,7 @@ class KiongoziRepositoryImpl(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) : KiongoziRepository {
-//    override suspend fun getCurrentKiongozi(): Kiongozi? {
-//        val adminId = auth.currentUser?.uid ?: return null
-//        return getKiongoziById(adminId)
-//    }
-//
-//    override suspend fun getKiongoziById(kiongoziId: String): Kiongozi? {
-//        return try {
-//            val snapshot = firestore.collection("Kiongos").document(kiongoziId).get().await()
-//            snapshot.toObject(Kiongozi::class.java)
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            null
-//        }
-//    }
+
     override suspend fun getViongozi(): List<Kiongozi> {
         val admins = mutableListOf<Kiongozi>()
         firestore.collection("Kiongos").get().await().forEach { document ->
@@ -79,5 +66,20 @@ class KiongoziRepositoryImpl(
     override suspend fun logout() {
         auth.signOut()
     }
+
+    //    override suspend fun getCurrentKiongozi(): Kiongozi? {
+//        val adminId = auth.currentUser?.uid ?: return null
+//        return getKiongoziById(adminId)
+//    }
+//
+//    override suspend fun getKiongoziById(kiongoziId: String): Kiongozi? {
+//        return try {
+//            val snapshot = firestore.collection("Kiongos").document(kiongoziId).get().await()
+//            snapshot.toObject(Kiongozi::class.java)
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            null
+//        }
+//    }
 
 }

@@ -8,12 +8,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.example.lifetrack.model.repository.UserRepositoryImpl
+import kotlinx.coroutines.SupervisorJob
 
 class UserPresenter(
     private val view: UserView,
     private val userRepository: UserRepositoryImpl
 ) {
     private var userListener: ListenerRegistration? = null
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     fun loadCurrentUser() {
         CoroutineScope(Dispatchers.Main).launch {
@@ -35,19 +37,9 @@ class UserPresenter(
     fun stopUserObserver() {
         userListener?.remove()
     }
-    fun updateUser(userId: String, user: User) {
-        CoroutineScope(Dispatchers.Main).launch {
-            when (val result = userRepository.updateUser(userId, user)) {
-                is AuthResult.Success -> view.showMessage("Profile updated")
-                is AuthResult.Failure -> view.showError(result.message)
-                AuthResult.Loading -> view.showMessage("Updating profile...")
-                is AuthResult.SuccessWithData<*> -> {}
-            }
-        }
-    }
 
     fun sendPasswordReset(email: String) {
-        CoroutineScope(Dispatchers.Main).launch {
+        coroutineScope.launch {
             when (val result = userRepository.sendPasswordReset(email)) {
                 is AuthResult.Success -> view.showMessage("Reset email sent")
                 is AuthResult.Failure -> view.showError(result.message)
@@ -58,26 +50,26 @@ class UserPresenter(
     }
 
     fun getPatients(onResult: (List<User>) -> Unit) {
-        CoroutineScope(Dispatchers.Main).launch {
+        coroutineScope.launch {
             val patients = userRepository.getPatients()
             onResult(patients)
         }
     }
 
     fun addPatient(patient: User, onResult: (User) -> Unit) {
-        CoroutineScope(Dispatchers.Main).launch {
+        coroutineScope.launch {
             val result = userRepository.addPatient(patient)
             when (result) {
                 is AuthResult.SuccessWithData<*> -> onResult(result.data as User)
                 is AuthResult.Failure -> view.showError(result.message)
-                AuthResult.Loading -> {}
-                is AuthResult.Success -> {}
+                AuthResult.Loading -> {view.showMessage("Adding patient...")}
+                is AuthResult.Success -> {view.showMessage("Success")}
             }
         }
     }
 
     fun updatePatient(patient: User, onResult: (User) -> Unit) {
-        CoroutineScope(Dispatchers.Main).launch {
+        coroutineScope.launch {
             val result = userRepository.updatePatient(patient)
             when (result) {
                 is AuthResult.SuccessWithData<*> -> onResult(result.data as User)
@@ -89,7 +81,7 @@ class UserPresenter(
     }
 
     fun deletePatient(patient: User, onResult: () -> Unit) {
-        CoroutineScope(Dispatchers.Main).launch {
+        coroutineScope.launch {
             val result = userRepository.deletePatient(patient)
             when (result) {
                 is AuthResult.Success -> onResult()
@@ -101,7 +93,7 @@ class UserPresenter(
     }
 
     fun logout() {
-        CoroutineScope(Dispatchers.Main).launch {
+        coroutineScope.launch {
             userRepository.logout()
             view.onLogout()
         }
