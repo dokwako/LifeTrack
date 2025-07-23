@@ -67,7 +67,7 @@ fun AppNavigation(scope: CoroutineScope) {
     )
     NavHost(
         navController = navController,
-        startDestination = "login"
+        startDestination = "home"
     ) {
         composable("splash") {
             SplashScreen(navController)
