@@ -15,7 +15,7 @@ class UserPresenter(
     private val userRepository: UserRepositoryImpl
 ) {
     private var userListener: ListenerRegistration? = null
-    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     fun loadCurrentUser() {
         CoroutineScope(Dispatchers.Main).launch {

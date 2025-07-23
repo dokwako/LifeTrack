@@ -25,7 +25,9 @@ class AuthPresenter(
     fun login(email: String, password: String) {
         view?.showLoading(true, "Logging in...")
         scope.launch {
-            val result = repository.login(email, password)
+            val result = withContext(Dispatchers.IO){
+                repository.login(email, password)
+            }
             handleAuthResult(result)
         }
     }

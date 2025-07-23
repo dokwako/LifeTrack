@@ -1,6 +1,6 @@
 package com.example.lifetrack.model.repository
 
-import android.util.Log
+//import android.util.Log
 import com.example.lifetrack.model.data.AuthResult
 import com.example.lifetrack.model.data.User
 import com.google.firebase.auth.FirebaseAuth
@@ -64,7 +64,6 @@ class UserRepositoryImpl(
                 phoneNumber = patient.phoneNumber,
                 displayName = patient.fullName
             )
-
             AuthResult.SuccessWithData(result)
         } catch (e: Exception) {
             AuthResult.Failure(e.message ?: "Failed to save patient data")

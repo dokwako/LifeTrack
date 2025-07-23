@@ -25,7 +25,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 fun QuickActionsRow(
     onEmergencyClick: () -> Unit,
     onSearchClick: () -> Unit,
-    onAlmaClick: () -> Unit
+    onAlmaClick: () -> Unit,
+//    onEmergency: () -> Unit
 ) {
     Card(
         modifier = Modifier

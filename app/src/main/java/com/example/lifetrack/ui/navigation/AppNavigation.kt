@@ -87,9 +87,9 @@ fun AppNavigation(scope: CoroutineScope) {
         composable("home") {
             HomeScreen(
                 navController = navController,
-                onEmergency = { navController.navigate("emergency") },
-                onSearch = { navController.navigate("search")},
-                onAlma = { navController.navigate("alma") }
+//                onEmergency = { navController.navigate("emergency") },
+//                onSearch = { navController.navigate("search")},
+//                onAlma = { navController.navigate("alma") }
             )
         }
 

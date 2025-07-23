@@ -1,352 +1,219 @@
 package com.example.lifetrack.ui.screens
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-//import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import kotlinx.coroutines.delay
 import com.example.lifetrack.ui.components.HealthSummaryCard
-import com.example.lifetrack.ui.components.LifeTrackTopBar
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.ui.text.font.FontWeight
 import com.example.lifetrack.ui.components.QuickActionsRow
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
-    onEmergency: () -> Unit,
-    onSearch: () -> Unit,
-    onAlma: () -> Unit
+//    onEmergency: () -> Unit,
+//    onSearch: () -> Unit,
+//    onAlma: () -> Unit
 ) {
-    var refresh by remember { mutableStateOf(false) }
-    var isVisible by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        delay(500)
-        isVisible = true
-        refresh = true
-    }
-
     Scaffold(
         topBar = {
-            LifeTrackTopBar(
-                onMenuClick = { navController.navigate("menu") },
-                onProfileClick = { navController.navigate("profile") }
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "LifeTrack",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary,
+//                        textAlign = Alignment.CenterVertically
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate("menu") }) {
+                        Icon(Icons.Filled.Menu, contentDescription = "Menu", tint = MaterialTheme.colorScheme.primary)
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { navController.navigate("profile") }) {
+                        Icon(Icons.Filled.Person, contentDescription = "Profile", tint = MaterialTheme.colorScheme.primary)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                )
             )
-        },
-        containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.95f)
+        }
+        ,
+        containerColor = Brush.verticalGradient(
+            listOf(Color(0xFF1B2B34), Color(0xFF243B4A))
+        ).asColor()
     ) { innerPadding ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp), // Increased spacing
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
-            //item {
-            //    AnimatedVisibility(
-            //        visible = isVisible,
-            //        enter = fadeIn(animationSpec = tween(1000))
-            //    ) {
-            //        Text(
-            //            text = "Welcome Back!",
-            //            style = MaterialTheme.typography.headlineSmall,
-            //            textAlign = TextAlign.Center,
-            //            modifier = Modifier.padding(bottom = 14.dp)
-            //        )
-            //    }
-            //}
-            item {
-                AnimatedVisibility(
-                    visible = isVisible,
-                    enter = fadeIn(animationSpec = tween(1200))
-                ) {
-                    HealthSummaryCard()
-                }
-            }
+            HealthSummaryCard()
 
-            item {
-                AnimatedVisibility(
-                    visible = isVisible,
-                    enter = fadeIn(animationSpec = tween(1400))
-                ) {
-                    //Text(
-                    //    text = "Quick Actions",
-                    //    style = MaterialTheme.typography.titleLarge,
-                    //    modifier = Modifier.padding(bottom = 16.dp)
-                    //)
-                    QuickActionsRow(
-                        onEmergencyClick = onEmergency,
-                        onSearchClick = onSearch,
-                        onAlmaClick = onAlma
+            Text(
+                text = "Welcome Back ",
+                style = MaterialTheme.typography.titleLargeEmphasized,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.align(Alignment.Start),
+                fontWeight = FontWeight.Bold
+            )
+            QuickActionsRow(onEmergencyClick = {}, onSearchClick = {}, onAlmaClick = {})
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                item {
+                    GlassActionCard(
+                        icon = Icons.Filled.CalendarToday,
+                        title = "Medical Timeline",
+                        subtitle = "Dr. Jane Doe\nGeneral Checkup",
+                        onClick = { navController.navigate("medical_timeline") }
                     )
                 }
-            }
-
-            item {
-                AnimatedVisibility(
-                    visible = isVisible,
-                    enter = fadeIn(animationSpec = tween(1600))
-                ) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .wrapContentHeight(),
-                        elevation = CardDefaults.cardElevation(8.dp),
-                        onClick = { navController.navigate("medical_timeline") } // Changed from "login"
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.CalendarToday,
-                                contentDescription = "Medical Timeline",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text(
-                                    text = "Medical Timeline",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Text(
-                                    text = "Sample: Dr. Jane Doe - General Checkup",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        }
-                    }
+                item {
+                    GlassActionCard(
+                        icon = Icons.Filled.LocalHospital,
+                        title = "Telemedicine",
+                        subtitle = "Connect with a doctor now",
+                        onClick = { navController.navigate("telemedicine") }
+                    )
                 }
-            }
-
-            item {
-                AnimatedVisibility(
-                    visible = isVisible,
-                    enter = fadeIn(animationSpec = tween(1800))
-                ) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .wrapContentHeight(),
-                        elevation = CardDefaults.cardElevation(8.dp),
-                        onClick = { navController.navigate("telemedicine") } // Changed from "login"
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.LocalHospital,
-                                contentDescription = "Telemedicine",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text(
-                                    text = "Telemedicine",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Text(
-                                    text = "Connect with a doctor now",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        }
-                    }
+                item {
+                    GlassActionCard(
+                        icon = Icons.Filled.Notifications,
+                        title = "Epidemic Alert",
+                        subtitle = "HIV/TB Treatment Camps",
+                        onClick = { navController.navigate("epidemic_alert") }
+                    )
                 }
-            }
-
-            item {
-                AnimatedVisibility(
-                    visible = isVisible,
-                    enter = fadeIn(animationSpec = tween(2000))
-                ) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .wrapContentHeight(),
-                        elevation = CardDefaults.cardElevation(8.dp),
-                        onClick = { navController.navigate("epidemic_alert") } // Changed from "login"
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Notifications,
-                                contentDescription = "Epidemic Alert",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text(
-                                    text = "Epidemic Alert",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Text(
-                                    text = "HIV/TB Treatment Camps",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        }
-                    }
+                item {
+                    GlassActionCard(
+                        icon = Icons.Filled.People,
+                        title = "Practitioner Connect",
+                        subtitle = "Find help nearby",
+                        onClick = { navController.navigate("expert") }
+                    )
                 }
-            }
-
-            item {
-                AnimatedVisibility(
-                    visible = isVisible,
-                    enter = fadeIn(animationSpec = tween(2200))
-                ) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .wrapContentHeight(),
-                        elevation = CardDefaults.cardElevation(8.dp),
-                        onClick = { navController.navigate("expert") } // Changed from "login"
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.People,
-                                contentDescription = "Practitioner Connect",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text(
-                                    text = "Practitioner Connect",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Text(
-                                    text = "Find help nearby",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        }
-                    }
+                item {
+                    GlassActionCard(
+                        icon = Icons.Filled.Info,
+                        title = "Info Hub",
+                        subtitle = "Missions & Security Info",
+                        onClick = { navController.navigate("info_hub") }
+                    )
                 }
-            }
-
-            item {
-                AnimatedVisibility(
-                    visible = isVisible,
-                    enter = fadeIn(animationSpec = tween(2400))
-                ) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .wrapContentHeight(),
-                        elevation = CardDefaults.cardElevation(8.dp),
-                        onClick = { navController.navigate("info_hub") } // Changed from "login"
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Info,
-                                contentDescription = "Info Hub",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text(
-                                    text = "Info Hub",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Text(
-                                    text = "Missions & Security Info",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        }
-                    }
+                item {
+                    GlassActionCard(
+                        icon = Icons.Filled.DeviceThermostat,
+                        title = "H.I.V Test Alerts",
+                        subtitle = "Free HIV Test Alerts (Kenya)",
+                        onClick = { navController.navigate("additional_features") }
+                    )
                 }
-            }
-
-            item {
-                AnimatedVisibility(
-                    visible = isVisible,
-                    enter = fadeIn(animationSpec = tween(2600))
-                ) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .wrapContentHeight(),
-                        elevation = CardDefaults.cardElevation(8.dp),
-                        onClick = { navController.navigate("additional_features") } // Changed from "login"
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                text = "Additional Features",
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Text(
-                                text = "Free HIV Test Alerts (Kenya)",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                text = "Bamboo Health Points (China)",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                text = "Group Care",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
+                item {
+                    GlassActionCard(
+                        icon = Icons.AutoMirrored.Filled.Help,
+                        title = "Help & Support",
+                        subtitle = "FAQs, Contact Us",
+                        onClick = {
+//                            navController.navigate("help_support")
                         }
-                    }
-                }
-            }
+                    )
 
-            item {
-                AnimatedVisibility(
-                    visible = isVisible,
-                    enter = fadeIn(animationSpec = tween(2800))
-                ) {
-                    Button(
-                        onClick = { navController.navigate("login") },
-                        modifier = Modifier
-                            .fillMaxWidth(0.7f)
-                            .padding(top = 24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                    ) {
-                        Text("Get Started", color = MaterialTheme.colorScheme.onPrimary)
-                    }
+                }
+                item {
+                    GlassActionCard(
+                        icon = Icons.Filled.Healing,
+                        title = "BHP",
+                        subtitle = "Bamboo Health Points (China)",
+                        onClick = {
+//                            navController.navigate("settings")
+                        }
+                    )
                 }
             }
         }
     }
 }
+
+@Composable
+fun GlassActionCard(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit
+) {
+    val shape: Shape = RoundedCornerShape(20.dp)
+    Card(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .clip(shape)
+            .blur(8.dp)
+            .background(
+                brush = Brush.verticalGradient(
+                    listOf(
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), // Apply primary color
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.05f) // Apply primary color
+                    )
+                ),
+                shape = shape
+            ),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp),
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(28.dp)
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+            )
+        }
+    }
+}
+
+
+fun Brush.asColor(): Color = Color.Transparent
