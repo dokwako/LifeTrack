@@ -26,8 +26,10 @@ import com.example.lifetrack.ui.screens.TelemedicineScreen
 import com.example.lifetrack.ui.screens.EpidemicAlertScreen
 import com.example.lifetrack.ui.screens.InfoHubScreen
 import com.example.lifetrack.ui.screens.AdditionalFeaturesScreen
+import com.example.lifetrack.ui.screens.BHPScreen
 import com.example.lifetrack.ui.screens.ChatScreen
 import com.example.lifetrack.ui.screens.ExpertScreen
+import com.example.lifetrack.ui.screens.HelpSupportScreen
 import com.example.lifetrack.view.AuthView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -162,5 +164,11 @@ fun AppNavigation(scope: CoroutineScope) {
         composable("epidemic_alert") { EpidemicAlertScreen(navController) }
         composable("info_hub") { InfoHubScreen(navController) }
         composable("additional_features") { AdditionalFeaturesScreen(navController) }
+        composable("help_support") {
+             HelpSupportScreen(navController)
+        }
+        composable("bhp"){
+            BHPScreen(navController)
+        }
     }
 }

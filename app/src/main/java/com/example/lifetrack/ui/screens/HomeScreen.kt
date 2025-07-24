@@ -1,5 +1,6 @@
 package com.example.lifetrack.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -10,7 +11,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
+//import androidx.compose.ui.draw.blur
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -23,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.ui.text.font.FontWeight
 import com.example.lifetrack.ui.components.QuickActionsRow
+import androidx.core.net.toUri
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -32,6 +35,7 @@ fun HomeScreen(
 //    onSearch: () -> Unit,
 //    onAlma: () -> Unit
 ) {
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             TopAppBar(
@@ -59,9 +63,7 @@ fun HomeScreen(
             )
         }
         ,
-        containerColor = Brush.verticalGradient(
-            listOf(Color(0xFF1B2B34), Color(0xFF243B4A))
-        ).asColor()
+        containerColor = asColor()
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -79,7 +81,7 @@ fun HomeScreen(
                 modifier = Modifier.align(Alignment.Start),
                 fontWeight = FontWeight.Bold
             )
-            QuickActionsRow(onEmergencyClick = {}, onSearchClick = {}, onAlmaClick = {navController.navigate("chat")})
+            QuickActionsRow(onEmergencyClick = { onEmergencyCall(context) }, onSearchClick = { navController.navigate("help_support")}, onAlmaClick = {navController.navigate("chat")})
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -141,7 +143,7 @@ fun HomeScreen(
                         title = "Help & Support",
                         subtitle = "FAQs, Contact Us",
                         onClick = {
-//                            navController.navigate("help_support")
+                            navController.navigate("help_support")
                         }
                     )
 
@@ -152,7 +154,7 @@ fun HomeScreen(
                         title = "BHP",
                         subtitle = "Bamboo Health Points (China)",
                         onClick = {
-//                            navController.navigate("settings")
+                            navController.navigate("bhp")
                         }
                     )
                 }
@@ -216,4 +218,12 @@ fun GlassActionCard(
 }
 
 
-fun Brush.asColor(): Color = Color.Transparent
+fun asColor(): Color = Color.Transparent
+
+//@Composable
+private fun onEmergencyCall(context: android.content.Context) {
+    val intent = Intent(Intent.ACTION_DIAL).apply {
+        data = "tel:112".toUri()
+    }
+    context.startActivity(intent)
+}
