@@ -1,33 +1,42 @@
 package com.example.lifetrack.presenter
 
+import android.util.Log
 import com.example.lifetrack.model.network.ApiService
 import com.example.lifetrack.view.AIChatView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import android.util.Log
+import kotlinx.coroutines.*
 
 class ChatPresenter(
-    private val view: AIChatView,
     private val apiService: ApiService
 ) {
 
+    private var view: AIChatView? = null
+    private val presenterJob = SupervisorJob()
+    private val scope = CoroutineScope(Dispatchers.Main + presenterJob)
+
+    fun attachView(view: AIChatView) {
+        this.view = view
+    }
+
+    fun detachView() {
+        this.view = null
+        presenterJob.cancel()
+    }
+
     fun sendMessageToAI(prompt: String) {
-        CoroutineScope(Dispatchers.Main).launch {
-            view.showLoading()
+        scope.launch {
+            view?.showLoading()
             try {
-                val aiResponse = apiService.getAIResponse(prompt)
-                view.displayAIResponse(aiResponse)
+                val aiResponse = withContext(Dispatchers.IO) {
+                    apiService.getAIResponse(prompt)
+                }
+                view?.displayAIResponse(aiResponse)
                 Log.d("ChatPresenter", "AI Response: $aiResponse")
             } catch (e: Exception) {
-                view.showError(e.localizedMessage ?: "Unknown Error")
-                Log.d("ChatPresenter", "Error fetching AI response: ${e.localizedMessage}")
+                view?.showError(e.localizedMessage ?: "Unknown Error")
+                Log.e("ChatPresenter", "Error fetching AI response: ${e.localizedMessage}", e)
             } finally {
-                view.hideLoading()
+                view?.hideLoading()
             }
         }
     }
-
 }
-
-

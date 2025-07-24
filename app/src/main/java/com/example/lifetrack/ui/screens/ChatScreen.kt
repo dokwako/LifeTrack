@@ -1,6 +1,5 @@
 package com.example.lifetrack.ui.screens
 
-
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -29,36 +29,31 @@ fun ChatScreen(
     presenter: ChatPresenter
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
     var userInput by remember { mutableStateOf(TextFieldValue("")) }
     var messages by remember { mutableStateOf(listOf<ChatMessage>()) }
-    LaunchedEffect(true) {
-        val view = object: AIChatView {
-
+    var isLoading by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        presenter.attachView(object : AIChatView {
             override fun showLoading() {
-                TODO("Not yet implemented")
+                isLoading = true
             }
-
             override fun hideLoading() {
-                TODO("Not yet implemented")
+                isLoading = false
             }
-
             override fun displayAIResponse(response: String) {
-                coroutineScope.launch {
-                    messages = messages + ChatMessage("AI: $response", false)
-                }
+                messages = messages + ChatMessage("AI: $response", false)
             }
-
             override fun showError(message: String) {
-                val context = null
-                Toast.makeText(context, "Error: $message", Toast.LENGTH_LONG).show()            }
-            
-        }
+                Toast.makeText(context, "Error: $message", Toast.LENGTH_LONG).show()
+            }
+        })
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("AI Chat") },
+                title = { Text("LifeTrack AI Chat") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -90,8 +85,11 @@ fun ChatScreen(
                     onClick = {
                         if (userInput.text.isNotBlank()) {
                             val userMessage = ChatMessage(userInput.text, true)
-                            val aiResponse = ChatMessage("AI: ${presenter.sendMessageToAI(userInput.text)}", false)
-                            messages = messages + userMessage + aiResponse
+                            messages = messages + userMessage
+
+                            coroutineScope.launch {
+                                presenter.sendMessageToAI(userInput.text)
+                            }
                             userInput = TextFieldValue("")
                         }
                     }
@@ -101,25 +99,34 @@ fun ChatScreen(
             }
         }
     ) { innerPadding ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 12.dp),
-            reverseLayout = true
         ) {
-            items(messages.reversed()) { message ->
-                ChatBubble(message)
-                Spacer(modifier = Modifier.height(8.dp))
+            if (isLoading) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
+
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(12.dp),
+                reverseLayout = true
+            ) {
+                items(messages.reversed()) { message ->
+                    ChatBubble(message)
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
     }
+
 }
 
 @Composable
 fun ChatBubble(message: ChatMessage) {
     val bubbleColor = if (message.isUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-    val alignment = if (message.isUser) Alignment.End else Alignment.Start
     val textColor = if (message.isUser) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
 
     Row(
@@ -139,5 +146,5 @@ fun ChatBubble(message: ChatMessage) {
             )
         }
     }
+    
 }
-

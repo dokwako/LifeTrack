@@ -74,24 +74,6 @@ fun AppNavigation(scope: CoroutineScope) {
     val client = KtorClientFactory().create()
     val apiService = ApiService(client, authRepository)
     val chatPresenter = ChatPresenter(
-        view = object : com.example.lifetrack.view.AIChatView {
-            override fun showLoading() {
-                // Show loading indicator
-            }
-
-            override fun hideLoading() {
-                // Hide loading indicator
-            }
-
-            override fun displayAIResponse(response: String) {
-                Toast.makeText(context, "AI Response: $response", Toast.LENGTH_LONG).show()
-
-            }
-
-            override fun showError(message: String) {
-                Toast.makeText(context, "Error: $message", Toast.LENGTH_LONG).show()
-            }
-        },
         apiService = apiService
     )
     NavHost(
