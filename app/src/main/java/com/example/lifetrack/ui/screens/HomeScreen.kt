@@ -179,8 +179,8 @@ fun GlassActionCard(
             .background(
                 brush = Brush.verticalGradient(
                     listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
                     )
                 ),
                 shape = shape
