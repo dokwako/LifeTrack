@@ -110,6 +110,8 @@ dependencies {
     implementation(libs.ktor.logging)
     implementation(libs.androidx.work.runtime.ktx)
 
+    implementation ("androidx.compose.material3:material3:1.1.1")
+
     //charts
     implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation ("androidx.compose.ui:ui-viewbinding:1.6.0")
