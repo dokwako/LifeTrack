@@ -4,16 +4,19 @@ import android.content.Context
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.lifetrack.model.repository.AuthRepositoryImpl
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 
 class SyncEngine(private val clientService: HttpClient) {
     private val scope = CoroutineScope(Dispatchers.IO)
+//    private val client: HttpClient = clientService
 
     companion object {
         fun createDefault(): SyncEngine {
@@ -22,23 +25,23 @@ class SyncEngine(private val clientService: HttpClient) {
         }
     }
     fun startSync() {
-        scope.launch {
-            clientService.init()
-        }
+//        scope.launch {
+//            clientService.init()
+//        }
     }
     fun retrySync(maxAttempts: Int = 3, delayMillis: Long = 1000L) {
         scope.launch {
             var attempt = 0
             while (attempt < maxAttempts) {
                 try {
-                    clientService.init()
+//                    clientService.init()
                     return@launch
                 } catch (e: Exception) {
                     attempt++
                     if (attempt == maxAttempts) {
                         e.printStackTrace()
                     } else {
-                        kotlinx.coroutines.delay(delayMillis * attempt)
+                        delay(delayMillis * attempt)
                     }
                 }
             }
@@ -54,10 +57,7 @@ class SyncEngine(private val clientService: HttpClient) {
         )
     }
 
-    fun HttpClient.init() {
-        val service = ApiService(this)
 //        service.testService("admin:test")
-    }
     fun stopSync() {
         scope.cancel()
     }

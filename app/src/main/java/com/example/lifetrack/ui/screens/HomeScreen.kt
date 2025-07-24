@@ -79,7 +79,7 @@ fun HomeScreen(
                 modifier = Modifier.align(Alignment.Start),
                 fontWeight = FontWeight.Bold
             )
-            QuickActionsRow(onEmergencyClick = {}, onSearchClick = {}, onAlmaClick = {})
+            QuickActionsRow(onEmergencyClick = {}, onSearchClick = {}, onAlmaClick = {navController.navigate("chat")})
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -175,12 +175,12 @@ fun GlassActionCard(
             .fillMaxWidth()
             .height(120.dp)
             .clip(shape)
-            .blur(8.dp)
+//            .blur(1.dp)
             .background(
                 brush = Brush.verticalGradient(
                     listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), // Apply primary color
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.05f) // Apply primary color
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
                     )
                 ),
                 shape = shape

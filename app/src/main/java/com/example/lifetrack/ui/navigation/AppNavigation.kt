@@ -7,9 +7,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.lifetrack.model.network.ApiService
+import com.example.lifetrack.model.network.KtorClientFactory
 import com.example.lifetrack.model.repository.AuthRepositoryImpl
 import com.example.lifetrack.model.repository.UserRepositoryImpl
 import com.example.lifetrack.presenter.AuthPresenter
+import com.example.lifetrack.presenter.ChatPresenter
 import com.example.lifetrack.ui.screens.AdminScreen
 import com.example.lifetrack.ui.screens.HomeScreen
 import com.example.lifetrack.ui.screens.LoginScreen
@@ -23,6 +26,7 @@ import com.example.lifetrack.ui.screens.TelemedicineScreen
 import com.example.lifetrack.ui.screens.EpidemicAlertScreen
 import com.example.lifetrack.ui.screens.InfoHubScreen
 import com.example.lifetrack.ui.screens.AdditionalFeaturesScreen
+import com.example.lifetrack.ui.screens.ChatScreen
 import com.example.lifetrack.ui.screens.ExpertScreen
 import com.example.lifetrack.view.AuthView
 import kotlinx.coroutines.CoroutineScope
@@ -65,9 +69,32 @@ fun AppNavigation(scope: CoroutineScope) {
         repository = authRepository,
         scope = scope
     )
+    val client = KtorClientFactory().create()
+    val apiService = ApiService(client, authRepository)
+    val chatPresenter = ChatPresenter(
+        view = object : com.example.lifetrack.view.AIChatView {
+            override fun showLoading() {
+                // Show loading indicator
+            }
+
+            override fun hideLoading() {
+                // Hide loading indicator
+            }
+
+            override fun displayAIResponse(response: String) {
+                Toast.makeText(context, "AI Response: $response", Toast.LENGTH_LONG).show()
+
+            }
+
+            override fun showError(message: String) {
+                Toast.makeText(context, "Error: $message", Toast.LENGTH_LONG).show()
+            }
+        },
+        apiService = apiService
+    )
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = "login"
     ) {
         composable("splash") {
             SplashScreen(navController)
@@ -93,6 +120,12 @@ fun AppNavigation(scope: CoroutineScope) {
             )
         }
 
+        composable("chat"){
+
+            ChatScreen(
+                navController = navController,
+                presenter = chatPresenter)
+        }
         composable("profile"){
             ProfileScreen(
                 navController = navController,

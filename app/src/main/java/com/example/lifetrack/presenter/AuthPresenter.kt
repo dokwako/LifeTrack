@@ -72,5 +72,15 @@ class AuthPresenter(
         return repository.generateLifeTrackID()
     }
 
+    fun getTokenId() {
+        scope.launch {
+            view?.showLoading(true)
+            val tokenId = withContext(Dispatchers.IO) {
+                repository.getTokenId()
+            }
+            view?.showLoading(false)
+            view?.onAuthSuccessWithData(tokenId)
+        }
+    }
 
 }

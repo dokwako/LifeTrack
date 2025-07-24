@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
+    alias(libs.plugins.kotlin.serialization)
+//    alias(libs.plugins.ksp)
 //    id("kotlin-kapt")
 //    alias(libs.plugins.hilt)
 }
@@ -111,7 +113,11 @@ dependencies {
     //charts
     implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation ("androidx.compose.ui:ui-viewbinding:1.6.0")
-    implementation("io.coil-kt:coil-compose:2.4.0") // Or latest stable version
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+    implementation(libs.kotlinx.serialization.json)
+//    implementation(libs.java.dotenv)
+//    ksp(libs.dotenv.processor)
 //    implementation(libs.hilt.android)
 //    kapt(libs.hilt.compiler)
 //    implementation(libs.hilt.navigation.compose)

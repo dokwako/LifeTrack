@@ -25,7 +25,6 @@ import android.util.Log
 
 @Composable
 fun LoginScreen(navController: NavController, presenter: AuthPresenter) {
-
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val userRole = remember { mutableStateOf("") }

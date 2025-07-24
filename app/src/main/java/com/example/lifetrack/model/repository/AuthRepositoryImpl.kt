@@ -18,7 +18,6 @@ class AuthRepositoryImpl(
     companion object {
         private const val TAG = "AuthRepositoryImpl"
     }
-
     override suspend fun login(email: String, password: String): AuthResult {
         return try {
             val result = auth.signInWithEmailAndPassword(email, password).await()
@@ -99,4 +98,15 @@ class AuthRepositoryImpl(
             AuthResult.Failure("Error verifying role: ${e.message}")
         } as String
     }
+
+    override suspend fun getTokenId(): String {
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+            ?: throw IllegalStateException("No authenticated user found.")
+
+        val idTokenResult = firebaseUser.getIdToken(true).await()
+        val token = idTokenResult.token
+
+        return token ?: throw IllegalStateException("Failed to retrieve ID token.")
+    }
+
 }
