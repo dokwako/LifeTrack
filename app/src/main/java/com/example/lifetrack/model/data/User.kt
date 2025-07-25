@@ -10,7 +10,9 @@ data class User(
     val profileImageUrl: String = "",
     val role: String = "patient",
     val createdAt: Long = System.currentTimeMillis(),
-    val updatedAt: Long = System.currentTimeMillis()
+    val updatedAt: Long = System.currentTimeMillis(),
+    val status: String = "Active",             //  Fixes unresolved reference
+    val lastActive: String = "Today"           //  Fixes unresolved reference
 ){
     constructor() : this(
         lifetrackId = "",

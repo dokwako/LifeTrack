@@ -13,6 +13,7 @@ import com.example.lifetrack.model.repository.AuthRepositoryImpl
 import com.example.lifetrack.model.repository.UserRepositoryImpl
 import com.example.lifetrack.presenter.AuthPresenter
 import com.example.lifetrack.presenter.ChatPresenter
+import com.example.lifetrack.ui.screens.AboutScreen
 import com.example.lifetrack.ui.screens.AdminScreen
 import com.example.lifetrack.ui.screens.HomeScreen
 import com.example.lifetrack.ui.screens.LoginScreen
@@ -152,5 +153,6 @@ fun AppNavigation(scope: CoroutineScope) {
         composable("bhp"){
             BHPScreen(navController)
         }
+        composable("about") { AboutScreen(navController) }
     }
 }

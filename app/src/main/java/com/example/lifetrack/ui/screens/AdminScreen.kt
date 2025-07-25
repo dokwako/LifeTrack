@@ -105,7 +105,7 @@ fun ManageAdmins() {
     val snackbarHostState = remember { SnackbarHostState() }
     val kiongoziView = remember {
         object : KiongoziView {
-//            override fun showKiongoziData(kiongozi: Kiongozi?) {}
+            //            override fun showKiongoziData(kiongozi: Kiongozi?) {}
             override fun updateKiongoziUI(kiongozi: Kiongozi) {}
             override fun showError(message: String) {
                 coroutineScope.launch {
