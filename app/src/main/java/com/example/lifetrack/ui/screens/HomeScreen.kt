@@ -23,18 +23,19 @@ import androidx.navigation.NavController
 import com.example.lifetrack.ui.components.HealthSummaryCard
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.text.font.FontWeight
 import com.example.lifetrack.ui.components.QuickActionsRow
 import androidx.core.net.toUri
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun HomeScreen(
-    navController: NavController,
-//    onEmergency: () -> Unit,
-//    onSearch: () -> Unit,
-//    onAlma: () -> Unit
-) {
+fun HomeScreen(navController: NavController) {
+    val bottomNavController = rememberNavController()
+    val navBackStackEntry by  bottomNavController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     val context = LocalContext.current
     Scaffold(
         topBar = {
@@ -61,8 +62,37 @@ fun HomeScreen(
                     containerColor = Color.Transparent
                 )
             )
-        }
-        ,
+        },
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    icon = { Icon (Icons.Filled.Home, contentDescription = "Home") },
+                    label = { Text("Home") },
+                    selected = currentRoute == "Home",
+                    onClick = { bottomNavController.navigate("home") }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Filled.Info, contentDescription = "Help & Support") },
+                    label = { Text("Help & Support") },
+                    selected = currentRoute == "Help & Support",
+                    onClick = { bottomNavController.navigate("Help & Support") }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Filled.MedicalServices, contentDescription = "Services") },
+                    label = { Text("Services") },
+                    selected = currentRoute == "Services",
+                    onClick = { bottomNavController.navigate("Services") }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Filled.ShoppingCart, contentDescription = "Transact") },
+                    label = { Text("Transact") },
+                    selected = currentRoute == "transact",
+                    onClick = { bottomNavController.navigate("transact") }
+                )
+            }
+        },
+
+
         containerColor = asColor()
     ) { innerPadding ->
         Column(
@@ -74,14 +104,14 @@ fun HomeScreen(
         ) {
             HealthSummaryCard()
 
-            Text(
-                text = "Welcome Back ",
-                style = MaterialTheme.typography.titleLargeEmphasized,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.align(Alignment.Start),
-                fontWeight = FontWeight.Bold
-            )
-            QuickActionsRow(onEmergencyClick = { onEmergencyCall(context) }, onSearchClick = { navController.navigate("help_support")}, onAlmaClick = {navController.navigate("chat")})
+//            Text(
+//                text = "Welcome Back ",
+//                style = MaterialTheme.typography.titleLargeEmphasized,
+//                color = MaterialTheme.colorScheme.primary,
+//                modifier = Modifier.align(Alignment.Start),
+//                fontWeight = FontWeight.Bold
+//            )
+            //QuickActionsRow(onEmergencyClick = { onEmergencyCall(context) }, onSearchClick = { navController.navigate("help_support")}, onAlmaClick = {navController.navigate("chat")})
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -93,47 +123,47 @@ fun HomeScreen(
                     GlassActionCard(
                         icon = Icons.Filled.CalendarToday,
                         title = "Medical Timeline",
-                        subtitle = "Dr. Jane Doe\nGeneral Checkup",
+                        subtitle = "My Medical History",
                         onClick = { navController.navigate("medical_timeline") }
                     )
                 }
-                item {
-                    GlassActionCard(
-                        icon = Icons.Filled.LocalHospital,
-                        title = "Telemedicine",
-                        subtitle = "Connect with a doctor now",
-                        onClick = { navController.navigate("telemedicine") }
-                    )
-                }
+//                item {
+//                    GlassActionCard(
+//                        icon = Icons.Filled.LocalHospital,
+//                        title = "Telemedicine",
+//                        subtitle = "Connect with a doctor now",
+//                        onClick = { navController.navigate("telemedicine") }
+//                    )
+//                }
                 item {
                     GlassActionCard(
                         icon = Icons.Filled.Notifications,
-                        title = "Epidemic Alert",
+                        title = "Public Health Alert",
                         subtitle = "HIV/TB Treatment Camps",
                         onClick = { navController.navigate("epidemic_alert") }
                     )
                 }
-                item {
-                    GlassActionCard(
-                        icon = Icons.Filled.People,
-                        title = "Practitioner Connect",
-                        subtitle = "Find help nearby",
-                        onClick = { navController.navigate("expert") }
-                    )
-                }
+//                item {
+//                    GlassActionCard(
+//                        icon = Icons.Filled.People,
+//                        title = "Practitioner Connect",
+//                        subtitle = "Find help nearby",
+//                        onClick = { navController.navigate("expert") }
+//                    )
+//                }
                 item {
                     GlassActionCard(
                         icon = Icons.Filled.Info,
-                        title = "Info Hub",
-                        subtitle = "Missions & Security Info",
+                        title = "Community Health Hub",
+                        subtitle = "Health Campaign and awareness",
                         onClick = { navController.navigate("info_hub") }
                     )
                 }
                 item {
                     GlassActionCard(
                         icon = Icons.Filled.DeviceThermostat,
-                        title = "H.I.V Test Alerts",
-                        subtitle = "Free HIV Test Alerts (Kenya)",
+                        title = "Appointments",
+                        subtitle = "Upcoming v (Kenya)",
                         onClick = { navController.navigate("additional_features") }
                     )
                 }
@@ -150,14 +180,25 @@ fun HomeScreen(
                 }
                 item {
                     GlassActionCard(
-                        icon = Icons.Filled.Healing,
-                        title = "BHP",
-                        subtitle = "Bamboo Health Points (China)",
+                       icon = Icons.Filled.LocalPharmacy,
+                        title = "Medications ",
+                        subtitle = "Prescriptions and Reminders",
                         onClick = {
-                            navController.navigate("bhp")
+                            navController.navigate("help_support")
                         }
                     )
                 }
+
+//                item {
+//                    GlassActionCard(
+//                        icon = Icons.Filled.Healing,
+//                        title = "BHP",
+//                        subtitle = "Bamboo Health Points (China)",
+//                        onClick = {
+//                            navController.navigate("bhp")
+//                        }
+//                    )
+//                }
             }
         }
     }
