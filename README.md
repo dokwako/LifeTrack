@@ -4,8 +4,21 @@
   <i>Empowering patients to own their medical records and connect with healthcare providers seamlessly.</i>
 </p>
 
----
-![Uploading image.png…]()
+## 📱 App Showcase
+
+<table align="center">
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/ad0c0d27-51ad-440d-8dd1-ebea3ee1bdad" alt="Screenshot 1" width="250"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/7127ca23-1820-468f-85e7-28cfb1fe7781" alt="Screenshot 2" width="250"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/7249e70d-347a-4361-8772-ea73920664a1" alt="Screenshot 3" width="250"></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/b3b2a592-36a3-4a34-9d79-5236d7644cae" alt="Screenshot 4" width="250"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/1a5c7ee7-8ee8-4697-b4aa-0d2b85dbda83" alt="Screenshot 5" width="250"></td>
+    <td align="center"></td>
+  </tr>
+</table>
+
 
 
 ## 🌍 About the Project
